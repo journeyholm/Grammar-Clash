@@ -42,11 +42,33 @@
 }
 #game-container.is-active { display: flex; }
 
+/* ---------------------------------------------------------------------------
+   BATTLE LAYOUT
+   The HUD used to be a 4-column grid that stretched to the window width, so on a
+   desktop screen each card ballooned to ~300px and squeezed the arena into a
+   narrow strip. Now the whole battle is a centred PORTRAIT COLUMN (like Clash
+   Royale on a phone), the HUD has a fixed height, and cards are sized from that
+   height rather than from the available width — so the arena always gets the rest.
+   --------------------------------------------------------------------------- */
+:root {
+    --hud-h: clamp(108px, 17dvh, 152px);
+    /* Width that lets the 5:7 arena fill the remaining height with no letterbox */
+    --play-w: min(100vw, calc((100dvh - var(--hud-h)) * 0.715));
+    /* A card must satisfy BOTH constraints: fit five slots across the column,
+       AND fit inside the HUD's height. Whichever is smaller wins, so the hand
+       can never overflow horizontally on a phone or balloon on a desktop. */
+    --card-w: min(calc((var(--play-w) - 44px) / 5), calc((var(--hud-h) - 40px) / 1.35));
+    --card-h: calc(var(--card-w) * 1.35);
+}
+
 #arena-wrap {
     position: relative;
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
+    width: 100%;
+    max-width: var(--play-w);
+    margin: 0 auto;
 }
 #game-canvas { width: 100%; height: 100%; display: block; }
 
@@ -54,20 +76,33 @@
     flex: 0 0 auto;
     display: none;
     flex-direction: column;
-    gap: 6px;
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 4px;
+    height: var(--hud-h);
+    width: 100%;
+    max-width: var(--play-w);
+    margin: 0 auto;
+    padding: 5px 8px calc(4px + env(safe-area-inset-bottom, 0px));
     background: linear-gradient(180deg, rgba(15,23,42,0.97), rgba(2,6,23,1));
     border-top: 2px solid rgba(148,163,184,0.25);
     box-shadow: 0 -8px 24px rgba(0,0,0,0.6);
 }
 #player-ui-panel.is-active { display: flex; }
 
-#hud-cards { display: flex; align-items: flex-end; gap: 8px; }
+/* Cards derive their size from the HUD height, never from the window width. */
+#hud-cards {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 6px;
+    flex: 1 1 auto;
+    min-height: 0;
+}
 
 #next-card-preview {
     flex: 0 0 auto;
-    width: 46px;
-    min-height: 62px;
+    width: var(--card-w);
+    height: var(--card-h);
+    align-self: flex-end;
     border: 2px dashed rgba(148,163,184,0.55);
     border-radius: 8px;
     background: rgba(30,41,59,0.6);
@@ -79,11 +114,12 @@
 #next-card-preview .next-label { font-size: 8px; letter-spacing: .08em; color: #94a3b8; }
 
 #player-hand-container {
-    flex: 1 1 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: center;
     gap: 6px;
-    align-items: end;
+    height: 100%;
+    min-width: 0;
 }
 
 /* Horizontal elixir bar with 10 segment pips, like the real thing */
@@ -250,13 +286,25 @@ body, html {
             cursor: pointer;
         }
 
-/* Hand cards sit in a 4-across grid, so they size to the bar rather than a fixed width */
+/* Hand cards are sized by the HUD's HEIGHT, so they can never balloon to fill a
+   wide window. aspect-ratio then fixes their width. */
 .hand-card {
-    width: 100%;
+    width: var(--card-w);
+    height: var(--card-h);
     max-width: none;
-    aspect-ratio: 1 / 1.2;
     padding: 2px;
+    flex: 0 0 auto;
+    align-self: flex-end;
 }
+.hand-slot-empty {
+    width: var(--card-w); height: var(--card-h); flex: 0 0 auto; align-self: flex-end;
+    border: 2px dashed rgba(51,65,85,.7); border-radius: 8px;
+}
+/* Card contents scale off the card width so they stay legible at any size */
+.hand-card .card-emoji { font-size: calc(var(--card-w) * 0.42); line-height: 1; }
+.hand-card .card-nm    { font-size: calc(var(--card-w) * 0.135); line-height: 1.05; }
+.hand-card .card-ty    { font-size: calc(var(--card-w) * 0.105); line-height: 1; }
+
 .hand-card.is-dragging { opacity: .35; }
 .hand-card.unaffordable { filter: grayscale(1) brightness(.65); }
 .hand-card.unaffordable::after {
@@ -7295,9 +7343,9 @@ function applyAreaDamage(card, x, y, owner, radius) {
         }
 function handCardMarkup(card) {
     return `
-        <div class="bangers-font text-[8px] leading-none text-gray-800 text-center px-0.5">${card.name}</div>
-        <div class="text-[26px] leading-none">${card.emoji}</div>
-        <div class="bangers-font text-[7px] text-purple-600 uppercase leading-none truncate w-full text-center">${card.type}</div>
+        <div class="bangers-font card-nm text-gray-800 text-center px-0.5">${card.name}</div>
+        <div class="card-emoji">${card.emoji}</div>
+        <div class="bangers-font card-ty text-purple-600 uppercase truncate w-full text-center">${card.type}</div>
         <div class="absolute top-0.5 left-0.5 bg-pink-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm font-bold">${card.cost}</div>
     `;
 }
@@ -7324,11 +7372,10 @@ function renderPlayerHand() {
         playerHandElement.appendChild(cardEl);
     });
 
-    // Pad the row so 3 cards don't stretch to fill 4 columns
+    // Pad the row so a short hand keeps its spacing
     for (let i = gameState.player.hand.length; i < HAND_SIZE; i++) {
         const ph = document.createElement('div');
-        ph.className = 'rounded-lg border-2 border-dashed border-slate-700/70';
-        ph.style.aspectRatio = '1 / 1.2';
+        ph.className = 'hand-slot-empty';
         playerHandElement.appendChild(ph);
     }
 
