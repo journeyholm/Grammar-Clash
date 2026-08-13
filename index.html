@@ -317,6 +317,52 @@ body, html {
    should read as one clean centered column at every width. */
 #home-menu { display: flex; flex-direction: column; align-items: center; }
 
+/* ---------- HOME STRATEGY-MAP SCENE + FRAME ----------
+   #home-bg is the illustrated world (SVG terrain/fortress + emoji characters);
+   #home-frame is the ornate border. Both fixed to the viewport, shown only on the
+   home screen, and never interactive (pointer-events:none) so they can't block the
+   scrolling menu underneath. */
+#home-bg, #home-frame { position: fixed; inset: 0; pointer-events: none; display: none; }
+body.on-home #home-bg    { display: block; z-index: 1;   background: #04121a; }
+body.on-home #home-frame { display: block; z-index: 105; }
+#home-bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Keep the home content clear of the frame border on every size. */
+body.on-home #home-screen { background: transparent; padding-left: clamp(18px,4vw,34px); padding-right: clamp(18px,4vw,34px); }
+
+/* Emoji "characters" set into the map margins. Hidden on narrow screens where the
+   centred menu fills the width and would just cover them. */
+.home-char {
+    position: absolute; user-select: none; line-height: 1;
+    filter: drop-shadow(0 6px 9px rgba(0,0,0,.6));
+    opacity: .92;
+}
+.home-char.flip { transform: scaleX(-1); }
+@media (max-width: 640px) { .home-char.side { display: none; } }
+@keyframes charBob   { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-8px) } }
+@keyframes charBobF  { 0%,100%{ transform: translateY(0) scaleX(-1) } 50%{ transform: translateY(-8px) scaleX(-1) } }
+.home-char.bob  { animation: charBob 4.5s ease-in-out infinite; }
+.home-char.bob.flip { animation: charBobF 4.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .home-char { animation: none !important; } }
+
+/* Ornate frame: thick burgundy border, gold inner rule, dark inset shadow. */
+#home-frame::before {
+    content: ''; position: absolute; inset: 0;
+    border: clamp(12px,3vw,24px) solid #7f1414;
+    border-image: linear-gradient(135deg,#a4232a,#6d1111 45%,#a4232a) 1;
+}
+#home-frame::after {
+    content: ''; position: absolute; inset: clamp(12px,3vw,24px);
+    border: 3px solid #fbbf24; border-radius: 7px;
+    box-shadow: 0 0 0 3px #4a1d05, inset 0 0 26px rgba(0,0,0,.5);
+}
+.frame-corner {
+    position: absolute; margin: clamp(3px,1vw,9px);
+    font-size: clamp(20px,4.5vw,38px);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.7));
+    z-index: 1;
+}
+
 #home-title-svg svg { width: 100%; height: auto; display: block; overflow: visible; }
 @keyframes titleKeyPulse {
     0%, 100% { filter: drop-shadow(0 0 2px rgba(251,191,36,.55)); }
@@ -1141,6 +1187,20 @@ button, .card {
 </style>
 </head>
 <body>
+
+    <!-- HOME STRATEGY-MAP LAYERS
+         A themed illustrated scene (#home-bg) and an ornate frame (#home-frame)
+         sit behind/around the home UI so the menu reads as a board set into a
+         world instead of floating in flat colour. They are fixed to the viewport
+         and shown only while the home screen is up (body.on-home), decoupled from
+         the per-screen slide animation. Built procedurally by buildHomeScene(). -->
+    <div id="home-bg" aria-hidden="true"></div>
+    <div id="home-frame" aria-hidden="true">
+        <span class="frame-corner" style="top:0;left:0">📕</span>
+        <span class="frame-corner" style="top:0;right:0">📘</span>
+        <span class="frame-corner" style="bottom:0;left:0">🖋️</span>
+        <span class="frame-corner" style="bottom:0;right:0">👑</span>
+    </div>
 
     <!-- BATTLE SCREEN: arena on top, Clash-Royale-style card bar underneath -->
     <div id="game-container" class="hidden">
@@ -7247,6 +7307,10 @@ function setBattleVisible(on) {
     gameContainer.classList.toggle('is-active', on);
     playerUiPanel.classList.toggle('is-active', on);
     emotePanel.classList.toggle('is-active', on);
+    // Entering a battle doesn't go through showScreen(), so clear the home flag
+    // here — otherwise the fixed home frame (z-index 105) would paint its ornate
+    // border straight over the arena.
+    if (on) document.body.classList.remove('on-home');
     if (on) resizeCanvas();
 }
 
@@ -7328,7 +7392,139 @@ function buildHomeTitle() {
     homeTitleBuilt = true;
 }
 
+// ============================================================================
+// HOME STRATEGY-MAP SCENE
+// A themed, illustrated backdrop drawn from the CURRENT arena's palette, so the
+// home screen looks like the world you're climbing. Pure SVG + emoji — no raster
+// assets, so it stays self-contained and reflows to any screen. Rebuilt whenever
+// home is shown, since the arena (and therefore the palette) changes as you climb.
+// ============================================================================
+function shadeHex(hex, pct) {
+    // pct in [-1,1]: negative darkens toward black, positive lightens toward white.
+    let h = String(hex).replace('#', '');
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    let r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    if (![r, g, b].every(Number.isFinite)) return hex;
+    const target = pct < 0 ? 0 : 255, p = Math.abs(pct);
+    r = Math.round((target - r) * p) + r;
+    g = Math.round((target - g) * p) + g;
+    b = Math.round((target - b) * p) + b;
+    return `rgb(${r},${g},${b})`;
+}
+
+function buildHomeScene() {
+    const host = document.getElementById('home-bg');
+    if (!host) return;
+    const a = getArena(playerData ? playerData.trophies : 0);
+    const t = a.theme;
+
+    const skyTop = shadeHex(t.grass2, 0.30);
+    const skyMid = shadeHex(t.grass2, 0.05);
+    const ground = shadeHex(t.grass1, -0.30);
+    const groundLo = shadeHex(t.grass1, -0.55);
+    const mtnFar = shadeHex(t.grass1, 0.10);
+    const mtnNear = shadeHex(t.grass1, -0.10);
+    const stone = shadeHex(t.bridge, 0.42);
+    const stoneDk = shadeHex(t.bridge, 0.10);
+    const trim = t.bridgeStroke;
+
+    // A crenellated tower: base + merlons + a themed pennant.
+    const tower = (x, w, top, h, flag) => {
+        const merlon = w / 5;
+        let m = '';
+        for (let i = 0; i < 5; i += 2) m += `<rect x="${x + i * merlon}" y="${top - 12}" width="${merlon}" height="14" fill="${stone}"/>`;
+        return `
+        <g>
+            <rect x="${x}" y="${top}" width="${w}" height="${h}" fill="${stone}" stroke="${stoneDk}" stroke-width="3"/>
+            <rect x="${x}" y="${top}" width="${w}" height="${h}" fill="url(#stoneShade)"/>
+            ${m}
+            <rect x="${x + w * 0.36}" y="${top + h * 0.3}" width="${w * 0.28}" height="${w * 0.34}" rx="4" fill="${stoneDk}"/>
+            ${flag ? `<line x1="${x + w / 2}" y1="${top - 12}" x2="${x + w / 2}" y2="${top - 44}" stroke="${stoneDk}" stroke-width="3"/>
+                     <path d="M${x + w / 2} ${top - 44} L${x + w / 2 + 26} ${top - 37} L${x + w / 2} ${top - 30} Z" fill="${trim}"/>` : ''}
+        </g>`;
+    };
+
+    host.innerHTML = `
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="${skyTop}"/>
+                <stop offset="0.55" stop-color="${skyMid}"/>
+                <stop offset="1" stop-color="${t.grass1}"/>
+            </linearGradient>
+            <linearGradient id="grd" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="${ground}"/>
+                <stop offset="1" stop-color="${groundLo}"/>
+            </linearGradient>
+            <linearGradient id="stoneShade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(255,255,255,.16)"/>
+                <stop offset="1" stop-color="rgba(0,0,0,.28)"/>
+            </linearGradient>
+            <radialGradient id="vig" cx="50%" cy="42%" r="75%">
+                <stop offset="0" stop-color="rgba(0,0,0,0)"/>
+                <stop offset="0.7" stop-color="rgba(0,0,0,0)"/>
+                <stop offset="1" stop-color="rgba(0,0,0,.62)"/>
+            </radialGradient>
+            <linearGradient id="colScrim" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(2,10,20,0)"/>
+                <stop offset="0.5" stop-color="rgba(2,10,20,.34)"/>
+                <stop offset="1" stop-color="rgba(2,10,20,.10)"/>
+            </linearGradient>
+        </defs>
+
+        <!-- sky -->
+        <rect x="0" y="0" width="1200" height="800" fill="url(#sky)"/>
+
+        <!-- distant ranges -->
+        <path d="M0,330 L180,250 L360,320 L540,240 L720,315 L900,245 L1080,320 L1200,270 L1200,470 L0,470 Z" fill="${mtnFar}" opacity="0.7"/>
+        <path d="M0,400 L220,320 L430,395 L640,315 L860,390 L1060,320 L1200,385 L1200,520 L0,520 Z" fill="${mtnNear}" opacity="0.85"/>
+
+        <!-- flanking watchtowers -->
+        ${tower(70, 90, 300, 210, true)}
+        ${tower(1040, 90, 300, 210, true)}
+
+        <!-- central fortress -->
+        ${tower(470, 120, 250, 250, false)}
+        ${tower(430, 70, 300, 200, true)}
+        ${tower(700, 70, 300, 200, true)}
+        <rect x="540" y="300" width="120" height="200" fill="${stoneDk}"/>
+        <path d="M540,300 L600,240 L660,300 Z" fill="${stone}" stroke="${stoneDk}" stroke-width="3"/>
+        <rect x="576" y="380" width="48" height="120" rx="24" fill="#1a0f08"/>
+
+        <!-- ground -->
+        <path d="M0,470 Q600,420 1200,470 L1200,800 L0,800 Z" fill="url(#grd)"/>
+        <!-- central path leading to the fortress -->
+        <path d="M600,470 L520,800 L680,800 Z" fill="${shadeHex(t.path ? t.grass2 : t.grass2, 0.12)}" opacity="0.30"/>
+
+        <!-- river band + plank bridges -->
+        <rect x="0" y="612" width="1200" height="52" fill="${shadeHex(t.river, -0.05)}" opacity="0.78"/>
+        <rect x="0" y="612" width="1200" height="52" fill="url(#stoneShade)" opacity="0.4"/>
+        ${[250, 830].map(bx => `
+        <g>
+            <rect x="${bx}" y="602" width="120" height="72" fill="${t.bridge}"/>
+            <rect x="${bx}" y="602" width="120" height="72" fill="url(#stoneShade)"/>
+            ${[0,1,2,3,4,5,6].map(i => `<line x1="${bx + i * 20}" y1="602" x2="${bx + i * 20}" y2="674" stroke="rgba(0,0,0,.35)" stroke-width="2"/>`).join('')}
+            <rect x="${bx - 5}" y="598" width="130" height="9" rx="3" fill="${trim}"/>
+            <rect x="${bx - 5}" y="668" width="130" height="9" rx="3" fill="${trim}"/>
+        </g>`).join('')}
+
+        <rect x="0" y="0" width="1200" height="800" fill="url(#colScrim)"/>
+        <rect x="0" y="0" width="1200" height="800" fill="url(#vig)"/>
+    </svg>
+
+    <!-- Characters set into the map. 'side' ones hide on narrow screens where the
+         menu fills the width. Kept in the lower half so they never collide with the
+         title's down-words (ENGLISH / ARTS reach the top corners). % positions. -->
+    <span class="home-char side bob"      style="left:4%;   top:44%;   font-size:clamp(34px,4.6vw,72px)">🐉</span>
+    <span class="home-char side"          style="left:6%;   bottom:26%;font-size:clamp(30px,4.2vw,62px)">🛡️</span>
+    <span class="home-char side flip"     style="left:11%;  bottom:14%;font-size:clamp(26px,3.4vw,50px)">👹</span>
+    <span class="home-char side bob flip" style="right:4%;  top:42%;   font-size:clamp(30px,4.2vw,62px)">🧙</span>
+    <span class="home-char side"          style="right:7%;  bottom:26%;font-size:clamp(28px,3.8vw,56px)">🏹</span>
+    <span class="home-char side flip"     style="right:11%; bottom:14%;font-size:clamp(30px,4.2vw,62px)">🗿</span>`;
+}
+
 function showScreen(screenName) {
+    document.body.classList.toggle('on-home', screenName === 'home');
     // Null-guarded: a screen registered in `screens` whose markup was removed or
     // renamed used to throw here and leave the app on a blank page.
     Object.values(screens).forEach(s => s && s.classList.add('hidden'));
@@ -7343,6 +7539,7 @@ function showScreen(screenName) {
 
     if(screenName==='home') {
         if (!homeTitleBuilt) buildHomeTitle();   // static; build once, then it persists
+        buildHomeScene();                        // themed to the current arena, so rebuild each visit
         renderHomeScreen();
         // Only the countdown text needs a per-second tick; rebuilding the whole
         // screen every second was resetting every CSS animation and swallowing taps.
@@ -10961,13 +11158,11 @@ function renderArenaBanner() {
     if (!el) return;
     const a = getArena(playerData.trophies);
 
-    // ARENA IDENTITY: tint the home screen with the current arena's palette so
-    // the meta screens feel like they belong to the rung you're standing on.
+    // ARENA IDENTITY is now carried by the full illustrated scene (buildHomeScene),
+    // which paints #home-bg from this same arena palette. The screen itself stays
+    // transparent so that scene shows through.
     const home = document.getElementById('home-screen');
-    if (home) {
-        home.style.background =
-            `radial-gradient(ellipse at 50% 0%, ${a.theme.grass2} 0%, ${a.theme.grass1} 45%, #020617 100%)`;
-    }
+    if (home) home.style.background = 'transparent';
     const next = getArenaById(a.id + 1);
     const toGo = next ? (next.min - playerData.trophies) : 0;
     el.innerHTML = `
