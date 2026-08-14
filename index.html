@@ -7330,7 +7330,10 @@ function buildHomeTitle() {
 
     const U = 100;           // grid unit
     const PAD = 18;
-    const cols = 19, rows = 8;
+    // Single row now — the acrostic down-words (ENGLISH / LANGUAGE / ARTS) were
+    // dropped, so the title is just EPIC LANGUAGE ARENA and stays short, letting
+    // the rest of the home stack sit tighter beneath it.
+    const cols = 19, rows = 1;
     const W = cols * U, H = rows * U;
 
     const tile = (col, row, letter, kind) => {
@@ -7355,23 +7358,17 @@ function buildHomeTitle() {
     };
 
     let tiles = '';
-    // Across rows (row 0). First letter of each word is the shared 'key' tile.
+    // Just the across row. The first letter of each word stays a gold 'key' tile
+    // as an accent (E / L / A), even though the down-words are gone.
     HOME_TITLE.across.forEach(w => {
         [...w.word].forEach((ch, i) => {
             tiles += tile(w.col + i, 0, ch, i === 0 ? 'key' : 'across');
         });
     });
-    // Down words, rows 1+ (row 0 already drawn as the key tile).
-    HOME_TITLE.down.forEach(w => {
-        [...w.word].forEach((ch, i) => {
-            if (i === 0) return;
-            tiles += tile(w.col, i, ch, 'down');
-        });
-    });
 
     host.innerHTML = `
     <svg viewBox="${-PAD} ${-PAD} ${W + PAD * 2} ${H + PAD * 2}" role="img"
-         aria-label="Epic Language Arena — English Language Arts">
+         aria-label="Epic Language Arena">
         <defs>
             <linearGradient id="tileGold" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#ffe27a"/>
