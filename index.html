@@ -661,6 +661,22 @@ body.on-home #home-screen { background: transparent; padding-left: clamp(18px,4v
     background-size: 200% 100%;
     box-shadow: 0 0 14px #fbbf24, inset 0 0 8px rgba(255,255,255,.45);
 }
+/* SEGMENTED JUICE BAR — 10 pips like Clash Royale's elixir. A divider overlay
+   splits the liquid fill into ten cells and adds a top sheen, so cost is
+   readable at a glance without any per-frame JS. */
+#juice-pips {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2;
+    background-image:
+        linear-gradient(rgba(255,255,255,.18) 0 45%, rgba(0,0,0,.12) 55% 100%),
+        repeating-linear-gradient(90deg,
+            transparent 0, transparent calc(10% - 2px),
+            rgba(0,0,0,.6) calc(10% - 2px), rgba(0,0,0,.6) 10%);
+}
+/* The 10th divider sits on the outer edge; trim it so the bar ends clean. */
+#juice-pips::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 2px;
+    background: transparent;
+}
 #cycle-counter {
     flex: 0 0 auto;
     font-size: 9px; font-weight: 800; letter-spacing: .06em;
@@ -670,6 +686,47 @@ body.on-home #home-screen { background: transparent; padding-left: clamp(18px,4v
     border-radius: 6px;
     padding: 3px 6px;
     white-space: nowrap;
+}
+
+/* ---------- Extra-Credit (overtime) takeover ---------- */
+#ec-takeover {
+    position: absolute; inset: 0; z-index: 90; pointer-events: none;
+    display: none; overflow: hidden;
+}
+#ec-takeover.show { display: block; }
+/* Persistent golden edge-glow while overtime is active. */
+#ec-takeover.active {
+    display: block;
+    box-shadow: inset 0 0 60px 12px rgba(251,191,36,.35);
+    background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(120,53,15,.28) 100%);
+    animation: ecPulse 1.6s ease-in-out infinite;
+}
+@keyframes ecPulse {
+    0%,100% { box-shadow: inset 0 0 55px 10px rgba(251,191,36,.28); }
+    50%     { box-shadow: inset 0 0 75px 16px rgba(251,191,36,.5); }
+}
+#ec-burst {
+    position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%) scale(.4);
+    text-align: center; opacity: 0;
+    font-family: 'Bangers', cursive; color: #fde047;
+    text-shadow: 0 3px 0 #b45309, 0 0 24px rgba(251,191,36,.9);
+    white-space: nowrap;
+}
+#ec-burst span { display: block; font-size: clamp(30px, 8vw, 68px); letter-spacing: 2px; }
+#ec-burst small { display: block; font-family: 'Inter', sans-serif; font-weight: 800;
+    font-size: clamp(9px, 2.4vw, 15px); color: #fff; letter-spacing: .12em; margin-top: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,.8); }
+#ec-takeover.show #ec-burst { animation: ecBurst 2.1s cubic-bezier(.2,1,.3,1) forwards; }
+@keyframes ecBurst {
+    0%   { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+    18%  { opacity: 1; transform: translate(-50%,-50%) scale(1.12); }
+    30%  { transform: translate(-50%,-50%) scale(1); }
+    78%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-52%) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #ec-takeover.active { animation: none; }
+    #ec-takeover.show #ec-burst { animation-duration: .1s; }
 }
 
 /* Opponent card in the warm-up modal */
@@ -1205,6 +1262,11 @@ button, .card {
     <div id="game-container" class="hidden">
         <div id="arena-wrap">
             <canvas id="game-canvas"></canvas>
+            <!-- Extra-Credit (overtime) takeover: a one-shot golden burst when the
+                 match goes to overtime, plus a persistent glow while it lasts. -->
+            <div id="ec-takeover" aria-hidden="true">
+                <div id="ec-burst"><span>⚡ EXTRA CREDIT ⚡</span><small>TRIPLE JUICE — SUDDEN DEATH LOOMS</small></div>
+            </div>
             <div id="emote-panel" class="hidden">
                 <button id="emote-toggle" title="Emotes">💬</button>
                 <div id="emote-list">
@@ -1793,16 +1855,16 @@ const OPPONENTS = [
       deck: [33, 9, 53, 71, 27, 22, 114, 122] },
     { name: "The Hyperbolist",  emoji: "🌋", arena: 4, style: 'tank',
       taunt: "This is the BIGGEST battle in HISTORY!",
-      deck: [61, 0, 18, 3, 35, 83, 111, 116] },
+      deck: [61, 0, 18, 3, 35, 83, 111, 116, 123] },
     { name: "Iron E. Maiden",   emoji: "🎭", arena: 4, style: 'defensive',
       taunt: "Oh, WONDERFUL. You brought troops.",
-      deck: [84, 68, 73, 71, 27, 80] },
+      deck: [84, 68, 73, 71, 27, 80, 124, 127] },
     { name: "The Narrator",     emoji: "📜", arena: 5, style: 'control',
       taunt: "Little did they know how this would end.",
-      deck: [70, 78, 71, 9, 64, 80, 115, 120] },
+      deck: [70, 78, 71, 9, 64, 80, 115, 120, 126] },
     { name: "Chairman Claim",   emoji: "⚖️", arena: 6, style: 'balanced',
       taunt: "My evidence is overwhelming. Yours?",
-      deck: [26, 61, 66, 71, 80, 83, 116, 112, 121] }
+      deck: [26, 61, 66, 71, 80, 83, 116, 112, 121, 125, 129] }
 ];
 
 // Style knobs the AI reads: how eagerly it pushes and how hard it defends.
@@ -1934,7 +1996,9 @@ const SPAWNED_CARDS = [
              // Risen by the Fragment Graveyard (very weak, swarms in numbers).
              { id: 109, name: 'Sentence Fragment', category: 'Troop', type: 'Fragment', cost: 0, emoji: '💀', health: 34, damage: 30, speed: 1.5, range: 30, attackSpeed: 70, isFlying: false, canAttackAir: false },
              // Split off the Gerund Golem when it dies (two chunky building-targeters).
-             { id: 110, name: 'Gerund Golemite', category: 'Troop', type: 'Gerund', cost: 0, emoji: '🪨', health: 300, damage: 45, speed: 0.8, range: 30, attackSpeed: 120, isFlying: false, targetsBuildings: true }
+             { id: 110, name: 'Gerund Golemite', category: 'Troop', type: 'Gerund', cost: 0, emoji: '🪨', health: 300, damage: 45, speed: 0.8, range: 30, attackSpeed: 120, isFlying: false, targetsBuildings: true },
+             // A word the Proofreader's Curse has "corrected" — now fights for you.
+             { id: 130, name: 'Corrected Word', category: 'Troop', type: 'Editing', cost: 0, emoji: '✅', health: 90, damage: 44, speed: 1.6, range: 30, attackSpeed: 65, isFlying: false, canAttackAir: false }
         ];
 
         const ALL_CARDS = [
@@ -2264,7 +2328,44 @@ const SPAWNED_CARDS = [
     // ZAP — cheap stun that resets charges and clears the tiniest troops.
     { id: 121, name: 'Exclamation Jolt', category: 'Spell', type: 'Exclamation', cost: 2, emoji: '⚡', spellEffect: 'burst',
       damage: 80, radius: 92, stunDuration: 55, crownTowerDamageMultiplier: 0.35, unlockCost: 500,
-      info: "ZAP! A jolt of emphasis that stuns a whole area — resets a charging troop, finishes off Spirits and swarms." }
+      info: "ZAP! A jolt of emphasis that stuns a whole area — resets a charging troop, finishes off Spirits and swarms." },
+
+    // ========================================================================
+    // ARCHETYPE PACK — four brand-new mechanics (Mega Knight, Inferno, Sparky,
+    // Mother Witch) plus three balanced fillers to pass 100 cards.
+    // ========================================================================
+
+    // MEGA KNIGHT — slams on deploy, then leaps onto distant groups.
+    { id: 123, name: 'Capital Crusher', category: 'Troop', type: 'Mechanics', cost: 7, emoji: '🔨', health: 1900, damage: 170, speed: 1.0, range: 30, attackSpeed: 110,
+      deploySlam: { radius: 90, damage: 180 }, jump: { range: 340, radius: 90, damage: 180, cooldown: 300 }, unlockCost: 2000,
+      info: "Lands like a capital letter at the start of a sentence — a ground-shaking slam — then LEAPS across the arena to crush the next group. A wrecking ball against swarms." },
+
+    // INFERNO — ramping damage that melts tanks; reset by a Zap/stun.
+    { id: 124, name: 'Red Pen Tower', category: 'Building', type: 'Editing', cost: 5, emoji: '🖍️', health: 850, damage: 22, speed: 0, range: 200, attackSpeed: 11, canAttackAir: true,
+      duration: 1800, inferno: { perStack: 0.30, maxStacks: 12 }, unlockCost: 1000,
+      info: "Marks one error, and corrects HARDER the longer it stays on it — trivial damage at first, devastating after a few seconds. The answer to a big tank. A stun resets its focus." },
+
+    // SPARKY — a huge charged blast; high-risk because a Zap resets the wind-up.
+    { id: 125, name: 'Diagram Cannon', category: 'Troop', type: 'Syntax', cost: 6, emoji: '🛰️', health: 600, damage: 0, speed: 0.7, range: 150, attackSpeed: 300,
+      chargeUp: { ticks: 150, radius: 78, damage: 540 }, unlockCost: 1600,
+      info: "Takes a few seconds to fully diagram the sentence — then unleashes a colossal area blast that clears a whole push. Fragile and slow; a Zap resets its wind-up, so protect it." },
+
+    // MOTHER WITCH — enemies it kills become your troops.
+    { id: 126, name: "Proofreader's Curse", category: 'Troop', type: 'Editing', cost: 5, emoji: '🧹', health: 550, damage: 70, speed: 1.0, range: 130, attackSpeed: 90, canAttackAir: true,
+      curse: { spawnId: 130 }, unlockCost: 1400,
+      info: "Every error she strikes down is rewritten into a Corrected Word that fights for YOU. Punishes an opponent who over-commits — a small push can snowball into your army." },
+
+    // FILLER 1 — a fragile long-range sniper (Musketeer / Marksman).
+    { id: 127, name: 'Quotation Marksman', category: 'Troop', type: 'Punctuation', cost: 4, emoji: '🎯', health: 240, damage: 150, speed: 1.1, range: 175, attackSpeed: 95, canAttackAir: true, unlockCost: 700,
+      info: "Quotes the exact words from a distance — a high-damage sniper that outranges most troops and picks air or ground. Fragile up close." },
+
+    // FILLER 2 — fast suicide unit that only smashes buildings (Wall Breakers).
+    { id: 128, name: 'Wall-Breaker Brackets', category: 'Troop', type: 'Parenthetical', cost: 2, emoji: '💣', health: 120, damage: 260, speed: 2.7, range: 30, attackSpeed: 60, targetsBuildings: true, kamikaze: true, splashRadius: 42, spawnCount: 2, unlockCost: 500,
+      info: "Two brackets that sprint past your troops and blow themselves up on the nearest tower or building. Ignore them and they take a big bite out of a tower." },
+
+    // FILLER 3 — the Rage spell (a rally: +damage and +speed to your troops).
+    { id: 129, name: 'Rhetorical Rally', category: 'Spell', type: 'Rhetoric', cost: 3, emoji: '📣', spellEffect: 'rage', radius: 120, duration: 300, rageMult: 1.4, unlockCost: 700,
+      info: "A rousing rhetorical appeal — your troops in the area hit 40% harder AND move faster for a while. Turn a stalled push into a breakthrough." }
         ];
 
         // --- CARD DATA INTEGRITY ---
@@ -5121,7 +5222,12 @@ takeDamage(amount, multiplierOrSource = null) {
                 playSound('towerFall');
                 for (let i = 0; i < 60; i++) gameState.particles.push(new Particle(this.x, this.y));
                 gameState.effects.push(new Effect(this.x, this.y, { effectType: 'explosion', radius: 90, duration: 34 }));
+                // A proper collapse: the tower topples and crumbles, then settles
+                // into rubble. The timer matches the crumble Corpse's 28-frame tumble
+                // so the rock appears exactly as the tumble finishes (no blank gap).
+                this.collapseTimer = 28;
                 this.rubbleTimer = 40;
+                gameState.corpses.push(new Corpse(this.x, this.y - this.size * 0.3, getArenaTowerEmoji(this.isKing, this.owner), this.size * 1.5, 'crumble', this.owner));
                 if (this.owner === 'opponent') {
                     playerData.stats.towersDestroyed++;
                     gameState.flyingCrowns.push(new FlyingCrown(this.x, this.y, ARENA_WIDTH - 30, 78));
@@ -5161,12 +5267,27 @@ draw() {
         const wobble = this.rubbleTimer > 0 ? Math.sin(this.rubbleTimer * 0.9) * 4 : 0;
         ctx.font = `${this.size * 1.6}px sans-serif`;
         if (dead) {
-            ctx.globalAlpha *= 0.55;
-            ctx.fillText('🪨', this.x + wobble, this.y);
+            // While collapsing, the tumbling tower is rendered by its Corpse entity;
+            // once it settles, leave a rock in its place.
+            if ((this.collapseTimer || 0) <= 0) {
+                ctx.globalAlpha *= 0.55;
+                ctx.fillText('🪨', this.x + wobble, this.y);
+            }
         } else {
             ctx.fillText(towerEmoji, this.x + wobble, this.y);
         }
         ctx.restore();
+
+        // A dark scar on the ground where a tower fell, so the lane reads as broken.
+        if (dead) {
+            ctx.save();
+            ctx.globalAlpha = 0.42;
+            ctx.fillStyle = 'rgba(14,11,7,0.75)';
+            ctx.beginPath();
+            ctx.ellipse(this.x, this.y + this.size * 0.55, this.size * 0.85, this.size * 0.30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
 
         // Ground shadow + hit flash
         if (!dead) {
@@ -5248,6 +5369,13 @@ class Unit {
         this.chargeDist = 0;
         this.charged = false;
         this.juiceGenTimer = 0;
+
+        // Inferno ramp (Red Pen Tower): damage grows the longer it holds one target.
+        this.rampStacks = 0; this.rampTarget = null;
+        // Sparky wind-up (Diagram Cannon): a big shot that must charge, interruptible.
+        this.chargeProgress = 0;
+        // Mega Knight leap (Capital Crusher): a short delay before its first jump.
+        this.jumpCooldown = card.jump ? 120 : 0;
 
         // Shielded troops (the Guards) spawn behind a barrier that soaks damage
         // until it breaks. Long duration — it only ends when depleted.
@@ -5347,6 +5475,10 @@ class Unit {
         // 4. Combat Logic
         if (this.attackCooldown > 0) this.attackCooldown--;
         if (this.abilityCooldownTimer > 0) this.abilityCooldownTimer--;
+        if (this.jumpCooldown > 0) this.jumpCooldown--;
+
+        // Mega Knight leap: periodically jump onto a distant enemy cluster and slam.
+        if (this.card.jump && this.jumpCooldown <= 0 && this.tryJump()) return;
 
         // A healer whose patient is back to full HP must look for a new one,
         // otherwise it locks onto a healthy ally forever and does nothing.
@@ -5356,12 +5488,61 @@ class Unit {
         if (this.target) {
             const dist = distance(this.x, this.y, this.target.x, this.target.y);
             if (dist <= this.range + this.targetRadius(this.target)) {
-                if (this.attackCooldown <= 0) {
+                // Sparky wind-up: charge while a target is in range, then unleash a
+                // huge area blast. A stun resets the charge (see applyStatus).
+                if (this.card.chargeUp) {
+                    this.chargeProgress++;
+                    if (this.chargeProgress >= this.card.chargeUp.ticks) {
+                        this.chargeProgress = 0;
+                        this.fireBigShot(this.target);
+                    }
+                } else if (this.attackCooldown <= 0) {
                     this.attack(this.target);
                     this.attackCooldown = this.attackSpeed;
                 }
             } else if (!this.isBuilding) { this.updateMovement(); }
         } else if (!this.isBuilding) { this.moveForward(); }
+    }
+
+    // Sparky's payload: a devastating area blast centred on the target.
+    fireBigShot(target) {
+        const c = this.card.chargeUp;
+        const foes = this.owner === 'player' ? gameState.opponent : gameState.player;
+        foes.units.forEach(u => { if (u.health > 0 && distance(target.x, target.y, u.x, u.y) < c.radius) u.takeDamage(c.damage, this); });
+        foes.towers.forEach(t => { if (t.health > 0 && distance(target.x, target.y, t.x, t.y) < c.radius + t.size) t.takeDamage(c.damage, 0.35); });
+        gameState.effects.push(new Effect(target.x, target.y, { effectType: 'explosion', vfx: 'lightning', radius: c.radius, duration: 28 }));
+        gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 10);
+        playSound('spell');
+    }
+
+    // Mega Knight leap: find a knot of 2+ enemies within jump range but out of melee,
+    // teleport onto them, and slam for area damage. Returns true if it jumped.
+    tryJump() {
+        const j = this.card.jump;
+        const enemies = (this.owner === 'player' ? gameState.opponent.units : gameState.player.units).filter(u => u.health > 0);
+        let best = null, bestN = 1;
+        enemies.forEach(u => {
+            const d = distance(this.x, this.y, u.x, u.y);
+            if (d < this.range + 30 || d > j.range) return;          // too close or too far
+            const n = enemies.filter(o => distance(u.x, u.y, o.x, o.y) < 80).length;
+            if (n >= 2 && n > bestN) { bestN = n; best = u; }
+        });
+        if (!best) return false;
+        this.x = best.x; this.y = best.y - 4; this.clampToArena();
+        this.slam(j.radius, j.damage);
+        this.jumpCooldown = j.cooldown || 300;
+        this.target = best;
+        return true;
+    }
+
+    // Shared by the deploy-slam and the jump landing.
+    slam(radius, damage) {
+        const foes = this.owner === 'player' ? gameState.opponent : gameState.player;
+        foes.units.forEach(u => { if (u.health > 0 && distance(this.x, this.y, u.x, u.y) < radius) u.takeDamage(damage, this); });
+        foes.towers.forEach(t => { if (t.health > 0 && distance(this.x, this.y, t.x, t.y) < radius + t.size) t.takeDamage(damage, 0.35); });
+        gameState.effects.push(new Effect(this.x, this.y, { effectType: 'explosion', vfx: 'rocket', radius, duration: 24 }));
+        gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 8);
+        for (let i = 0; i < 10; i++) gameState.particles.push(new Particle(this.x, this.y));
     }
 
     // Towers are large; measuring to their centre made melee troops stall on the edge.
@@ -5516,6 +5697,18 @@ class Unit {
                     this.spawnUnit(this.card.deathSpawnId);
                 }
             }
+            // CURSE-ON-KILL (Mother Witch): a troop slain by a curser is rewritten
+            // into a small unit that fights for the curser's side.
+            if (source && source instanceof Unit && source.card.curse &&
+                source.owner !== this.owner && !this.isBuilding && !this.isClone) {
+                const cw = getCardById(source.card.curse.spawnId);
+                if (cw) {
+                    const u = new Unit(cw, this.x, this.y, source.owner, source.level);
+                    u.deployTimer = 12;
+                    gameState[source.owner].units.push(u);
+                    gameState.effects.push(new Effect(this.x, this.y, { effectType: 'synergy', radius: 30, duration: 22 }));
+                }
+            }
         }
     }
 
@@ -5526,6 +5719,14 @@ class Unit {
         // Rage scales the hit at the point of use, so it applies to melee, ranged
         // projectiles and chain arcs alike without touching this.damage itself.
         let dmg = Math.round(this.damage * this.damageMultiplier());
+
+        // Inferno ramp: each consecutive hit on the SAME target hits harder, up to a
+        // cap. Switching targets (or a stun) resets it — the tank-melter.
+        if (this.card.inferno) {
+            if (target === this.rampTarget) this.rampStacks = Math.min(this.card.inferno.maxStacks || 12, this.rampStacks + 1);
+            else { this.rampTarget = target; this.rampStacks = 0; }
+            dmg = Math.round(dmg * (1 + this.rampStacks * (this.card.inferno.perStack || 0.28)));
+        }
 
         // Charge payoff: a big first hit, then the charge is spent.
         if (this.card.charge && this.charged) {
@@ -5583,8 +5784,9 @@ class Unit {
         }
 
         // Ranged units now fire a visible projectile instead of dealing instant, invisible damage.
+        // `dmg` already includes rage, charge and the Inferno ramp, so pass it through.
         if (this.range >= 60) {
-            gameState.projectiles.push(new Projectile(this, target));
+            gameState.projectiles.push(new Projectile(this, target, dmg));
             playSound('shoot');
         } else {
             if (target.takeDamage) target.takeDamage(dmg, this);
@@ -5611,7 +5813,10 @@ class Unit {
     applyStatus(type, duration, magnitude = 0) {
         if (type === 'frozen') {
             this.effects.frozen = { duration: duration };
-            this.chargeDist = 0; this.charged = false;   // a stun breaks a charge
+            // A stun breaks a movement-charge, an Inferno ramp, and a Sparky wind-up.
+            this.chargeDist = 0; this.charged = false;
+            this.rampStacks = 0; this.rampTarget = null;
+            this.chargeProgress = 0;
         }
         else if (type === 'haste') {
             this.effects.haste = { duration: duration };
@@ -5687,13 +5892,19 @@ class Unit {
         const squashY = 1 - atk * 0.22;
         const pop = this.spawnAnim > 0 ? (1 - this.spawnAnim / 12) : 1;
 
-        // Ground shadow grounds the unit in the arena
+        // BATTLEFIELD DEPTH — a soft contact shadow. Flying units cast theirs
+        // further down and smaller, so the gap between unit and shadow reads as
+        // altitude (a 3D cue on a 2D board, exactly like Clash Royale).
+        const fly = this.card.isFlying;
+        const shY = this.y + this.size * (fly ? 1.55 : 0.72);
+        const shScale = fly ? 0.7 : 1;
         ctx.save();
-        ctx.globalAlpha *= this.card.isFlying ? 0.18 : 0.32;
-        ctx.fillStyle = '#000';
+        const sg = ctx.createRadialGradient(this.x, shY, 0, this.x, shY, this.size * 0.6 * shScale);
+        sg.addColorStop(0, 'rgba(0,0,0,' + (fly ? 0.30 : 0.42) + ')');
+        sg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = sg;
         ctx.beginPath();
-        ctx.ellipse(this.x, this.y + this.size * 0.72,
-                    this.size * 0.52 * squashX, this.size * 0.20, 0, 0, Math.PI * 2);
+        ctx.ellipse(this.x, shY, this.size * 0.58 * squashX * shScale, this.size * 0.24 * shScale, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
@@ -6076,15 +6287,16 @@ class Graveyard {
 }
 
 class Projectile {
-            constructor(source, target) {
+            constructor(source, target, dmgOverride) {
                 this.x = source.x; this.y = source.y;
                 this.sx = source.x; this.sy = source.y;    // launch point, for the arc
                 this.target = target;
                 this.sourceUnit = source;
                 this.owner = source.owner;
                 // Snapshot the buffed damage at launch — rage wearing off mid-flight
-                // shouldn't retroactively weaken a shot already in the air.
-                this.damage = Math.round(source.damage *
+                // shouldn't retroactively weaken a shot already in the air. When the
+                // attacker passes an explicit figure (Inferno ramp, charge), use it.
+                this.damage = (dmgOverride != null) ? dmgOverride : Math.round(source.damage *
                     (source.damageMultiplier ? source.damageMultiplier() : 1));
                 this.splashRadius = source.card.splashRadius || 0;   // area-on-impact
                 this.slowOnHit = source.card.slowOnHit || 0;         // chilling shots
@@ -7149,6 +7361,28 @@ function showBanner(text, color) {
     gameState.banner = { text, duration: 100, color: color || '#fbbf24' };
 }
 
+// EXTRA-CREDIT TAKEOVER — a one-shot golden burst when the match hits overtime,
+// then a persistent glow that stays until the match ends.
+let ecBurstTimer = null;
+function triggerExtraCreditTakeover() {
+    const el = document.getElementById('ec-takeover');
+    if (!el) { showBanner('EXTRA CREDIT!', '#fbbf24'); return; }
+    gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 14);
+    el.classList.remove('active');
+    el.classList.add('show');
+    // Retrigger the CSS animation cleanly.
+    const burst = document.getElementById('ec-burst');
+    if (burst) { burst.style.animation = 'none'; void burst.offsetWidth; burst.style.animation = ''; }
+    if (ecBurstTimer) clearTimeout(ecBurstTimer);
+    // After the burst plays, drop to the persistent overtime glow.
+    ecBurstTimer = setTimeout(() => { el.classList.remove('show'); el.classList.add('active'); }, 2100);
+}
+function clearExtraCreditTakeover() {
+    const el = document.getElementById('ec-takeover');
+    if (el) el.classList.remove('show', 'active');
+    if (ecBurstTimer) { clearTimeout(ecBurstTimer); ecBurstTimer = null; }
+}
+
 function updateJuiceUI() {
     const juice = gameState.player.juice;
     const pct = (juice / JUICE_MAX) * 100;
@@ -7234,7 +7468,7 @@ function step() {
         if (pTowers === oTowers && !gameState.overtime) {
             gameState.overtime = true;
             gameState.gameTimer = OVERTIME_DURATION;
-            showBanner("EXTRA CREDIT!", "#fbbf24");
+            triggerExtraCreditTakeover();
             playSound('chest');
             return;
         }
@@ -7304,6 +7538,7 @@ function step() {
     gameState.player.towers.concat(gameState.opponent.towers).forEach(t => {
         if (t.hitFlash > 0) t.hitFlash--;
         if (t.rubbleTimer > 0) t.rubbleTimer--;
+        if (t.collapseTimer > 0) t.collapseTimer--;
     });
     // Stop inspecting anything that has died.
     if (gameState.inspecting && gameState.inspecting.health <= 0) gameState.inspecting = null;
@@ -7714,6 +7949,8 @@ function setBattleVisible(on) {
     // border straight over the arena.
     if (on) document.body.classList.remove('on-home');
     if (on) resizeCanvas();
+    // The overtime takeover is per-match — clear it whenever the arena opens/closes.
+    clearExtraCreditTakeover();
 }
 
 // ============================================================================
@@ -8364,7 +8601,9 @@ function defaultPlayerData() {
         conceptStats: {},                        // per-concept mastery, drives the Codex
         scribes: ['default'],                    // Tower Scribes owned
         activeScribe: 'default',
-        placementDone: false                     // has the placement quiz been taken
+        placementDone: false,                    // has the placement quiz been taken
+        trophyRoadClaimed: [],                   // indices of claimed Trophy Road rewards
+        daily: null                              // {date, quests, crowns, crownChestClaimed}
     };
 }
 
@@ -8579,6 +8818,11 @@ function loadPlayerData() {
     playerData.battleLog = playerData.battleLog
         .filter(b => b && typeof b === 'object')
         .slice(0, BATTLE_LOG_MAX);
+
+    // Trophy Road + Daily systems (older saves predate them).
+    if (!Array.isArray(playerData.trophyRoadClaimed)) playerData.trophyRoadClaimed = [];
+    if (playerData.daily && typeof playerData.daily !== 'object') playerData.daily = null;
+    ensureDailyQuests();
 
     savePlayerData();
 
@@ -9450,9 +9694,11 @@ function playCard(card, x, y, owner, modifier) {
         // Count Stats
         if (card.category === 'Troop' || card.category === 'Champion' || card.category === 'Building') {
             playerData.stats.troopsDeployed++;
+            dailyProgress('deploy', card.spawnCount || 1);
         }
         if (card.category === 'Spell') {
             playerData.stats.spellsCast++;
+            dailyProgress('spells');
         }
     }
     
@@ -9508,6 +9754,8 @@ function playCard(card, x, y, owner, modifier) {
             }
 
             playerState.units.push(newUnit);
+            // Mega Knight deploy-slam: area damage the instant it lands.
+            if (card.deploySlam) newUnit.slam(card.deploySlam.radius, card.deploySlam.damage);
         }
         // DEPLOY FLOURISH — shockwave ring plus a dust puff so every play lands
         // with some weight instead of a unit simply appearing.
@@ -9681,6 +9929,16 @@ function castSpell(card, x, y, owner) {
             // Rolls up the lane from the cast point, hitting everything it passes.
             gameState.hazards.push(new RollingLog(x, y, owner, card));
             gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 5);
+            break;
+        }
+        case 'rage': {
+            // Rally: your troops in the area hit harder AND move faster.
+            gameState.effects.push(new Effect(x, y, { effectType: 'haste', radius, duration: 40 }));
+            inRadius(friendlyUnits).forEach(u => {
+                u.applyStatus('rage', card.duration || 300, card.rageMult || 1.4);
+                u.applyStatus('haste', card.duration || 300);
+                gameState.damageIndicators.push(new DamageIndicator(u.x, u.y, 'RALLY!', '#f87171'));
+            });
             break;
         }
         case 'pull': {
@@ -10074,6 +10332,7 @@ function handleAnswer(isCorrect, modifier = null, isRepeat = false) {
     if (isCorrect) {
         // --- CORRECT ANSWER ---
         playerData.stats.correctAnswers = (playerData.stats.correctAnswers || 0) + 1;
+        dailyProgress('correct');
         if (sentence) { recordTopicResult(sentence.topic, true); logHit(sentence); creditMastery(sentence); }
         recordConceptResult(card && card.type, true);
         awardInk(sentence ? (sentence.lvl || 1) : 1, true);
@@ -10939,6 +11198,11 @@ function endGame(message) {
         right: answered.right,
         wrong: answered.wrong
     });
+    // Daily quests + Crown Chest progress from this match.
+    dailyProgress('battles');
+    if (isWin) dailyProgress('wins');
+    if (crownsWon > 0) dailyProgress('crowns', crownsWon);
+
     // Remember who this was so REMATCH can queue the same character again.
     lastOpponent = foe;
     const rematchBtn = document.getElementById('game-over-rematch-btn');
@@ -11614,7 +11878,128 @@ if (muteBtn) {
 }
 
 // --- THE SYNTAX LADDER SCREEN ---
+// ============================================================================
+// TROPHY ROAD — milestone rewards as you climb, claimed on the ladder screen.
+// ============================================================================
+const TROPHY_ROAD = [
+    { at: 50,   reward: { gold: 200 },                    label: '200 Gold',            icon: '💰' },
+    { at: 120,  reward: { chest: 'Silver Tome' },         label: 'Silver Chest',        icon: '🥈' },
+    { at: 220,  reward: { ink: 150 },                     label: '150 Ink',             icon: '🖋️' },
+    { at: 350,  reward: { wildcard: 'common', n: 3 },     label: '3 Common Wildcards',  icon: '🃏' },
+    { at: 500,  reward: { gold: 500 },                    label: '500 Gold',            icon: '💰' },
+    { at: 700,  reward: { card: 116 },                    label: 'Unlock The Protagonist', icon: '🤴' },
+    { at: 900,  reward: { chest: 'Golden Grimoire' },     label: 'Golden Chest',        icon: '🥇' },
+    { at: 1200, reward: { wildcard: 'rare', n: 2 },       label: '2 Rare Wildcards',    icon: '🃏' },
+    { at: 1500, reward: { scribe: 'quill' },              label: 'Quill Clerk Scribe',  icon: '🏰' },
+    { at: 2000, reward: { gold: 1000 },                   label: '1000 Gold',           icon: '💰' },
+    { at: 2500, reward: { card: 123 },                    label: 'Unlock Capital Crusher', icon: '🔨' },
+    { at: 2800, reward: { chest: 'Diamond Lexicon' },     label: 'Diamond Chest',       icon: '💎' },
+];
+
+// ============================================================================
+// DAILY QUESTS + CROWN CHEST — the daily engagement loop.
+// ============================================================================
+const CROWN_CHEST_GOAL = 10;
+const DAILY_QUEST_POOL = [
+    { id: 'battles', desc: 'Play 3 battles',                goal: 3,  reward: { gold: 80 } },
+    { id: 'wins',    desc: 'Win 2 battles',                 goal: 2,  reward: { gold: 150 } },
+    { id: 'correct', desc: 'Answer 12 questions correctly', goal: 12, reward: { ink: 90 } },
+    { id: 'spells',  desc: 'Cast 6 spells',                 goal: 6,  reward: { gold: 100 } },
+    { id: 'deploy',  desc: 'Deploy 25 troops',              goal: 25, reward: { gold: 120 } },
+    { id: 'crowns',  desc: 'Earn 7 crowns',                 goal: 7,  reward: { ink: 110 } },
+];
+
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+// Push a chest if there's a slot; otherwise fall back to its gold value so a
+// reward is never simply lost.
+function addChestSafe(type) {
+    if (playerData.chests.length < playerData.maxChestSlots) {
+        playerData.chests.push({ type, earnTime: Date.now(), unlockStartTime: null, boosted: false, boostUsed: false });
+        return type;
+    }
+    const gold = { 'Wooden Book': 80, 'Silver Tome': 200, 'Golden Grimoire': 500, 'Diamond Lexicon': 1200 }[type] || 100;
+    playerData.gold += gold;
+    return `${gold} Gold (chests full)`;
+}
+
+// Apply a reward object; returns a short description for the toast.
+function grantReward(r) {
+    if (!r) return '';
+    if (r.gold) { playerData.gold += r.gold; return `💰 ${r.gold} Gold`; }
+    if (r.ink)  { playerData.ink = (playerData.ink || 0) + r.ink; return `🖋️ ${r.ink} Ink`; }
+    if (r.chest) return `📦 ${addChestSafe(r.chest)}`;
+    if (r.wildcard) { playerData.wildcards[r.wildcard] = (playerData.wildcards[r.wildcard] || 0) + (r.n || 1); return `🃏 ${r.n || 1} ${r.wildcard} wildcard(s)`; }
+    if (r.card) {
+        const pc = playerData.cards.find(c => c.id === r.card);
+        const cd = getCardById(r.card);
+        if (pc) { pc.unlocked = true; pc.count = Math.max(pc.count || 0, 1); }
+        return `🎴 ${cd ? cd.name : 'a new card'} unlocked`;
+    }
+    if (r.scribe) { if (!playerData.scribes.includes(r.scribe)) playerData.scribes.push(r.scribe);
+        const sc = (typeof getScribe === 'function') ? getScribe(r.scribe) : null;
+        return `🏰 ${sc ? sc.name : 'Tower Scribe'} unlocked`; }
+    return 'reward';
+}
+
+// Refresh the daily quests + crown chest when the date rolls over.
+function ensureDailyQuests() {
+    const d = playerData.daily;
+    if (d && d.date === todayKey() && Array.isArray(d.quests)) return;
+    const picks = shuffle(DAILY_QUEST_POOL).slice(0, 3)
+        .map(q => ({ id: q.id, desc: q.desc, goal: q.goal, reward: q.reward, progress: 0, claimed: false }));
+    playerData.daily = { date: todayKey(), quests: picks, crowns: 0, crownChestClaimed: false };
+}
+
+// Advance any daily quest tracking `track`, and (for crowns) the Crown Chest.
+function dailyProgress(track, amount = 1) {
+    ensureDailyQuests();
+    const d = playerData.daily;
+    let changed = false;
+    d.quests.forEach(q => {
+        if (q.id === track && !q.claimed && q.progress < q.goal) {
+            q.progress = Math.min(q.goal, q.progress + amount);
+            changed = true;
+        }
+    });
+    if (track === 'crowns') { d.crowns = Math.min(CROWN_CHEST_GOAL, (d.crowns || 0) + amount); changed = true; }
+    if (changed) savePlayerData();
+}
+
+function claimDailyQuest(i) {
+    ensureDailyQuests();
+    const q = playerData.daily.quests[i];
+    if (!q || q.claimed || q.progress < q.goal) return;
+    q.claimed = true;
+    const msg = grantReward(q.reward);
+    playSound('chest'); savePlayerData();
+    flashAchievement(`✅ Daily done — ${msg}`);
+    renderLadderScreen();
+}
+
+function claimCrownChest() {
+    ensureDailyQuests();
+    const d = playerData.daily;
+    if (d.crownChestClaimed || (d.crowns || 0) < CROWN_CHEST_GOAL) return;
+    d.crownChestClaimed = true;
+    const msg = grantReward({ chest: 'Golden Grimoire' });
+    playSound('chest'); savePlayerData();
+    flashAchievement(`👑 Crown Chest — ${msg}`);
+    renderLadderScreen();
+}
+
+function claimTrophyReward(i) {
+    const m = TROPHY_ROAD[i];
+    if (!m || playerData.bestTrophies < m.at || playerData.trophyRoadClaimed.includes(i)) return;
+    playerData.trophyRoadClaimed.push(i);
+    const msg = grantReward(m.reward);
+    playSound('chest'); savePlayerData();
+    flashAchievement(`🏆 ${m.at} — ${msg}`);
+    renderLadderScreen();
+}
+
 function renderLadderScreen() {
+    ensureDailyQuests();
     const cur = getArena(playerData.trophies);
     const line = document.getElementById('ladder-trophy-line');
     if (line) line.innerHTML =
@@ -11624,7 +12009,7 @@ function renderLadderScreen() {
     if (!el) return;
 
     // Render top rung first so the ladder reads like a road climbing upward.
-    el.innerHTML = [...ARENAS].reverse().map(a => {
+    const arenasHTML = [...ARENAS].reverse().map(a => {
         const reached = playerData.bestTrophies >= a.min;
         const isCurrent = a.id === cur.id;
         const toGo = a.min - playerData.trophies;
@@ -11673,6 +12058,90 @@ function renderLadderScreen() {
             </div>
         </div>`;
     }).join('');
+
+    // ---- DAILY QUESTS ----
+    const d = playerData.daily;
+    const questRows = d.quests.map((q, i) => {
+        const pct = Math.min(100, Math.round(q.progress / q.goal * 100));
+        const rr = q.reward.gold ? `💰 ${q.reward.gold}` : q.reward.ink ? `🖋️ ${q.reward.ink}` : '🎁';
+        const btn = q.claimed
+            ? `<span class="text-[11px] bg-green-900 text-green-300 px-2 py-1 rounded border border-green-600">✓ Claimed</span>`
+            : q.progress >= q.goal
+                ? `<button class="btn-wood text-xs px-3 py-1 bg-green-700" onclick="claimDailyQuest(${i})">CLAIM ${rr}</button>`
+                : `<span class="text-[11px] text-gray-400">${rr}</span>`;
+        return `
+        <div class="bg-slate-800/60 rounded-lg p-2.5">
+            <div class="flex items-center justify-between gap-2">
+                <span class="text-sm text-gray-100">${q.desc}</span>${btn}
+            </div>
+            <div class="h-1.5 rounded-full bg-slate-900 overflow-hidden mt-1.5">
+                <div class="h-full bg-yellow-400" style="width:${pct}%"></div>
+            </div>
+            <div class="text-[10px] text-gray-400 mt-0.5">${q.progress} / ${q.goal}</div>
+        </div>`;
+    }).join('');
+
+    const ccPct = Math.min(100, Math.round((d.crowns || 0) / CROWN_CHEST_GOAL * 100));
+    const ccBtn = d.crownChestClaimed
+        ? `<span class="text-[11px] bg-green-900 text-green-300 px-2 py-1 rounded border border-green-600">✓ Opened today</span>`
+        : (d.crowns || 0) >= CROWN_CHEST_GOAL
+            ? `<button class="btn-wood text-xs px-3 py-1 bg-yellow-600" onclick="claimCrownChest()">OPEN 📦</button>`
+            : `<span class="text-[11px] text-gray-400">${d.crowns || 0}/${CROWN_CHEST_GOAL} 👑</span>`;
+
+    const dailyHTML = `
+        <div class="glass-panel rounded-2xl p-4 mb-3 border-l-4" style="border-left-color:#06b6d4">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="bangers-font text-xl text-cyan-300">📅 Daily Quests</h3>
+                <span class="text-[10px] text-gray-400 uppercase tracking-widest">Resets daily</span>
+            </div>
+            <div class="space-y-2">${questRows}</div>
+            <div class="bg-slate-800/60 rounded-lg p-2.5 mt-2 border border-yellow-500/30">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="bangers-font text-lg text-yellow-300">👑 Crown Chest</span>${ccBtn}
+                </div>
+                <div class="h-2 rounded-full bg-slate-900 overflow-hidden mt-1.5">
+                    <div class="h-full bg-gradient-to-r from-yellow-500 to-yellow-300" style="width:${ccPct}%"></div>
+                </div>
+                <div class="text-[10px] text-gray-400 mt-0.5">Earn crowns in battle to fill it — resets each day.</div>
+            </div>
+        </div>`;
+
+    // ---- TROPHY ROAD ----
+    const nextIdx = TROPHY_ROAD.findIndex(m => playerData.bestTrophies < m.at);
+    const roadRows = TROPHY_ROAD.map((m, i) => {
+        const claimed = playerData.trophyRoadClaimed.includes(i);
+        const reached = playerData.bestTrophies >= m.at;
+        const claimable = reached && !claimed;
+        const right = claimed
+            ? `<span class="text-[11px] bg-green-900 text-green-300 px-2 py-1 rounded border border-green-600">✓</span>`
+            : claimable
+                ? `<button class="btn-wood text-xs px-3 py-1 bg-green-700" onclick="claimTrophyReward(${i})">CLAIM</button>`
+                : `<span class="text-[11px] text-gray-400">${Math.max(0, m.at - playerData.trophies)} 🏆 to go</span>`;
+        const dimc = reached ? '' : 'opacity-50';
+        return `
+        <div class="flex items-center gap-3 bg-slate-800/60 rounded-lg p-2.5 ${dimc}"
+             style="${i === nextIdx ? 'box-shadow:0 0 0 1px #eab308;' : ''}">
+            <div class="text-2xl flex-shrink-0">${m.icon}</div>
+            <div class="flex-1 min-w-0">
+                <div class="text-sm text-gray-100 truncate">${m.label}</div>
+                <div class="text-[10px] uppercase tracking-widest text-yellow-400">${m.at} 🏆</div>
+            </div>
+            ${right}
+        </div>`;
+    }).join('');
+
+    const roadClaimable = TROPHY_ROAD.some((m, i) => playerData.bestTrophies >= m.at && !playerData.trophyRoadClaimed.includes(i));
+    const roadHTML = `
+        <div class="glass-panel rounded-2xl p-4 mb-3 border-l-4 border-yellow-500">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="bangers-font text-xl text-yellow-300">🛣️ Trophy Road</h3>
+                ${roadClaimable ? '<span class="text-[10px] bg-green-700 text-white px-2 py-0.5 rounded-full animate-pulse">REWARDS READY</span>' : ''}
+            </div>
+            <div class="space-y-2">${roadRows}</div>
+        </div>`;
+
+    el.innerHTML = dailyHTML + roadHTML +
+        `<h3 class="bangers-font text-xl text-white mt-2 mb-2 px-1">🪜 The Arenas</h3>` + arenasHTML;
 }
 
 // Compact arena banner shown on the home screen.
