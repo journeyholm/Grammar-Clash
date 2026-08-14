@@ -2360,7 +2360,7 @@ const SPAWNED_CARDS = [
       info: "Quotes the exact words from a distance — a high-damage sniper that outranges most troops and picks air or ground. Fragile up close." },
 
     // FILLER 2 — fast suicide unit that only smashes buildings (Wall Breakers).
-    { id: 128, name: 'Wall-Breaker Brackets', category: 'Troop', type: 'Parenthetical', cost: 2, emoji: '💣', health: 120, damage: 260, speed: 2.7, range: 30, attackSpeed: 60, targetsBuildings: true, kamikaze: true, splashRadius: 42, spawnCount: 2, unlockCost: 500,
+    { id: 128, name: 'Wall-Breaker Brackets', category: 'Troop', type: 'Parenthetical', cost: 2, emoji: '💣', health: 120, damage: 190, speed: 2.7, range: 30, attackSpeed: 60, targetsBuildings: true, kamikaze: true, splashRadius: 42, spawnCount: 2, unlockCost: 500,
       info: "Two brackets that sprint past your troops and blow themselves up on the nearest tower or building. Ignore them and they take a big bite out of a tower." },
 
     // FILLER 3 — the Rage spell (a rally: +damage and +speed to your troops).
@@ -5862,22 +5862,21 @@ class Unit {
             ctx.globalAlpha = 0.45;
         }
 
-        // shadowBlur is a full gaussian blur per draw call and is by far the most
-        // expensive thing a unit does — 40 units cost ~30ms/frame on it alone.
-        // Above a crowd threshold the individual glows overlap into mush anyway,
-        // so they're dropped exactly when frames are at risk. See gameState.lowFx.
+        // shadowBlur is a full gaussian blur per draw call — ~0.9ms PER UNIT in
+        // some browsers. The generic team-colour glow (once on every low-level
+        // unit) was costing a normal 15-unit match ~13ms for almost no benefit
+        // (side is already obvious from position and the health-bar colour). It's
+        // gone. Only the meaningful MASTERY glow on high-level cards remains, and
+        // even that drops out on a crowded board (gameState.lowFx).
         const glow = !gameState.lowFx;
         if (this.level >= 5) {
             if (glow) {
-                ctx.shadowBlur = 25;
+                ctx.shadowBlur = 22;
                 ctx.shadowColor = this.level >= 11 ? "#00fbff" : "#FFD700";
             }
             const rankIcon = this.level >= 11 ? "👑" : (this.level >= 8 ? "🔥" : "⭐");
             ctx.font = "10px sans-serif";
             ctx.fillText(rankIcon, this.x + 12, this.y - 12);
-        } else if (glow) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = this.owner === 'player' ? "#00ffff" : "#ff2d2d";
         }
 
         // --- GAME FEEL ---
@@ -5895,16 +5894,16 @@ class Unit {
         // BATTLEFIELD DEPTH — a soft contact shadow. Flying units cast theirs
         // further down and smaller, so the gap between unit and shadow reads as
         // altitude (a 3D cue on a 2D board, exactly like Clash Royale).
+        // A flat fill (not a per-frame radial gradient — that cost ~30ms on a
+        // swarm-heavy board). The flying offset is what actually sells the depth.
         const fly = this.card.isFlying;
         const shY = this.y + this.size * (fly ? 1.55 : 0.72);
         const shScale = fly ? 0.7 : 1;
         ctx.save();
-        const sg = ctx.createRadialGradient(this.x, shY, 0, this.x, shY, this.size * 0.6 * shScale);
-        sg.addColorStop(0, 'rgba(0,0,0,' + (fly ? 0.30 : 0.42) + ')');
-        sg.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = sg;
+        ctx.globalAlpha *= fly ? 0.22 : 0.34;
+        ctx.fillStyle = '#000';
         ctx.beginPath();
-        ctx.ellipse(this.x, shY, this.size * 0.58 * squashX * shScale, this.size * 0.24 * shScale, 0, 0, Math.PI * 2);
+        ctx.ellipse(this.x, shY, this.size * 0.56 * squashX * shScale, this.size * 0.22 * shScale, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
@@ -5925,6 +5924,55 @@ class Unit {
             ctx.arc(this.x, this.y + bob, this.size * 0.85, 0, Math.PI * 2);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
+            ctx.restore();
+        }
+
+        // --- SPECIAL-MECHANIC TELLS ---
+        // The charge/wind-up mechanics need to be READABLE so both players can play
+        // around them (protect a charging Sparky, Zap a ready Prince, etc.).
+        const bobY = this.y + bob;
+        // Sparky wind-up: a ring that fills as the shot charges, sparking near full.
+        if (this.card.chargeUp && this.chargeProgress > 0) {
+            const p = Math.min(1, this.chargeProgress / this.card.chargeUp.ticks);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x, bobY, this.size + 8, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * p);
+            ctx.strokeStyle = p > 0.85 ? '#fff' : '#a5f3fc';
+            ctx.lineWidth = 4; ctx.shadowBlur = 12; ctx.shadowColor = '#22d3ee';
+            ctx.stroke();
+            if (p > 0.6) {
+                for (let i = 0; i < 4; i++) {
+                    const a = this.animT * 3 + i * Math.PI / 2;
+                    ctx.beginPath();
+                    ctx.arc(this.x + Math.cos(a) * (this.size + 8), bobY + Math.sin(a) * (this.size + 8), 2.2, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fef08a'; ctx.fill();
+                }
+            }
+            ctx.restore();
+        }
+        // Charged Prince/Hog: a golden aura announcing the big first hit is loaded.
+        if (this.charged) {
+            ctx.save();
+            const pulse = 0.5 + 0.5 * Math.abs(Math.sin(this.animT * 1.5));
+            ctx.globalAlpha = 0.4 + pulse * 0.35;
+            ctx.beginPath();
+            ctx.arc(this.x, bobY, this.size + 6, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3;
+            ctx.shadowBlur = 14; ctx.shadowColor = '#fbbf24';
+            ctx.stroke();
+            ctx.restore();
+        }
+        // Inferno ramp: a heat glow that intensifies as it locks a target.
+        if (this.card.inferno && this.rampStacks > 0) {
+            const r = Math.min(1, this.rampStacks / (this.card.inferno.maxStacks || 12));
+            ctx.save();
+            ctx.globalAlpha = 0.25 + r * 0.5;
+            ctx.beginPath();
+            ctx.arc(this.x, bobY, this.size * (0.9 + r * 0.5), 0, Math.PI * 2);
+            const hg = ctx.createRadialGradient(this.x, bobY, 0, this.x, bobY, this.size * (0.9 + r * 0.5));
+            hg.addColorStop(0, 'rgba(255,180,60,0)');
+            hg.addColorStop(1, `rgba(255,${Math.round(120 - r * 100)},20,${0.4 + r * 0.4})`);
+            ctx.fillStyle = hg; ctx.fill();
             ctx.restore();
         }
 
@@ -6992,7 +7040,7 @@ const theme = getArenaTheme();
 // board sheds the per-unit glow rather than dropping frames. The threshold is
 // well above a normal board (a busy match runs ~20 units), so the look only
 // changes during the swarm fights where nobody can see individual glows anyway.
-gameState.lowFx = (gameState.player.units.length + gameState.opponent.units.length) > 26;
+gameState.lowFx = (gameState.player.units.length + gameState.opponent.units.length) > 16;
 ctx.fillStyle = theme.grass1; ctx.fillRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
 
 // Alternating turf stripes for depth
@@ -9345,10 +9393,17 @@ function createCardElement(card, size = 'large') {
 
 // Effective DPS: a 900-damage hit every 3 seconds is not a 900-damage unit.
 function cardDps(c) {
-    const dmg = Math.max(0, c.damage || 0);
-    const rate = Math.max(1, c.attackSpeed || 60);
     const count = c.spawnCount || 1;
-    return (dmg / (rate / 60)) * count;
+    // Cards whose damage lives in a special mechanic (Sparky's blast, the Inferno
+    // ramp, a Mega Knight's slam) would otherwise read as zero-DPS "support" and
+    // be mis-rated by the Strong/Weak panel. Convert them to an effective figure.
+    if (c.chargeUp) return c.chargeUp.damage / (c.chargeUp.ticks / 60);
+    let dmg = Math.max(0, c.damage || 0);
+    const rate = Math.max(1, c.attackSpeed || 60);
+    let dps = (dmg / (rate / 60)) * count;
+    if (c.inferno) dps *= (1 + (c.inferno.maxStacks * c.inferno.perStack) * 0.45); // sustained ramp
+    if (c.deploySlam) dps += c.deploySlam.damage * 0.4;   // burst value amortised
+    return dps;
 }
 function cardEhp(c) {
     return Math.max(1, (c.health || 1) * (c.spawnCount || 1));
@@ -9446,6 +9501,24 @@ function showCardInfoModal(card) {
     else if (card.targetsBuildings) rows.push(row('Targets', 'Buildings only'));
     if (card.duration && card.category === 'Building') rows.push(row('Lifetime', Math.round(card.duration / 60) + 's'));
     if (card.category === 'Spell' && card.radius) rows.push(row('Radius', card.radius));
+
+    // Special-mechanic stats — so a card's real power is never hidden behind a
+    // "damage: 0" (Sparky, Mega Knight, the pump, etc.).
+    if (card.chargeUp)   rows.push(row('Charged Blast', Math.round(card.chargeUp.damage * scale) + ' area'));
+    if (card.deploySlam) rows.push(row('Deploy Slam', Math.round(card.deploySlam.damage * scale) + ' area'));
+    if (card.jump)       rows.push(row('Leap Slam', Math.round(card.jump.damage * scale) + ' · range ' + card.jump.range));
+    if (card.inferno)    rows.push(row('Ramps to', '×' + (1 + card.inferno.maxStacks * card.inferno.perStack).toFixed(1) + ' damage'));
+    if (card.charge)     rows.push(row('Charge Hit', '×' + card.charge.bonusMult));
+    if (card.kamikaze)   rows.push(row('On arrival', 'Bursts + dies'));
+    if (card.splashFreeze) rows.push(row('Freezes', (card.splashFreeze / 60).toFixed(1) + 's'));
+    if (card.slowOnHit)  rows.push(row('Slows on hit', (card.slowOnHit / 60).toFixed(1) + 's'));
+    if (card.lifesteal)  rows.push(row('Lifesteal', Math.round(card.lifesteal * 100) + '%'));
+    if (card.startShield) rows.push(row('Shield', Math.round(card.startShield * scale) + ' each'));
+    if (card.curse)      rows.push(row('Curse', 'Kills join you'));
+    if (card.juiceGen)   rows.push(row('Generates', '+' + card.juiceGen.amount + ' Juice / ' + (card.juiceGen.interval / 60).toFixed(1) + 's'));
+    if (card.deathSpawnId) rows.push(row('On death', 'Splits into ' + (card.deathSpawnCount || 1)));
+    if (card.spawnUnitId) rows.push(row('Spawns', 'Troops every ' + ((card.spawnInterval || 300) / 60).toFixed(0) + 's'));
+    if (card.deployAnywhere) rows.push(row('Deploy', 'Anywhere'));
 
     const statsHtml = `
         <p class="my-3 text-gray-200 italic">${card.info || "A powerful linguistic unit."}</p>
