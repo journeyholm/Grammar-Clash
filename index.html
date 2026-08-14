@@ -304,13 +304,12 @@ body, html {
 #home-screen {
     overflow-y: auto;
     overflow-x: hidden;
-    justify-content: flex-start;
+    justify-content: flex-start;   /* top-anchored: title sits up under the frame */
     gap: 0.55rem;
     -webkit-overflow-scrolling: touch;
+    padding-top: clamp(14px, 2.4vh, 28px);
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
-#home-screen > :first-child { margin-top: auto; }
-#home-screen > :last-child  { margin-bottom: auto; }
 
 /* The home buttons are inline-block + text-center, so on a wide desktop window
    they used to wrap into a ragged 4-across grid. As the branded landing screen it
@@ -1326,10 +1325,6 @@ button, .card {
                  fallback if that JS ever fails to run. -->
             <h1 class="sr-only">Epic Language Arena</h1>
             <div id="home-title-svg" class="w-full" style="max-width:min(640px,92vw)"></div>
-            <div class="bangers-font text-blue-200 text-xs sm:text-sm mt-1 uppercase"
-                 style="letter-spacing:0.2em; opacity:0.9;">
-                Middle-School ELA · Battle-Royale Style
-            </div>
         </div>
         <div id="home-menu" class="space-y-3">
             <div id="home-arena-banner" class="mb-2"></div>
