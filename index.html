@@ -2032,8 +2032,8 @@ const SPAWNED_CARDS = [
             { id: 18, name: 'Intensifier Ram', category: 'Troop', type: 'Intensifier', cost: 4, emoji: '🐏', health: 350, damage: 100, speed: 2.5, range: 30, attackSpeed: 90, isFlying: false, unlockCost: 600, info: 'Charges for double damage.' },
             { id: 27, name: 'Conjunction Archer', category: 'Troop', type: 'Conjunction', cost: 3, emoji: '🏹', health: 120, damage: 40, speed: 1.2, range: 140, attackSpeed: 50, isFlying: false, canAttackAir: true, unlockCost: 400, info: 'FANBOYS: for, and, nor, but, or, yet, so. Ranged attacker that hits air and ground.' },
             { id: 28, name: 'Parenthetical Guards', category: 'Troop', type: 'Parenthetical', cost: 3, emoji: '⚔️', health: 130, damage: 46, speed: 1.5, range: 30, attackSpeed: 70, spawnCount: 2, startShield: 160, unlockCost: 300, info: 'Two guards, each behind a 160-HP shield — like a parenthetical, the outer layer takes the hit first.' },
-            { id: 50, name: 'Prepositional Phalanx', category: 'Troop', type: 'Preposition', cost: 4, emoji: '🛡️', health: 100, damage: 25, speed: 1.4, range: 30, attackSpeed: 70, spawnCount: 3, unlockCost: 500 },
-            { id: 51, name: 'Correlative Conjunction Twins', category: 'Troop', type: 'Conjunction', cost: 4, emoji: '👯', health: 220, damage: 35, speed: 1.4, range: 30, attackSpeed: 80, spawnCount: 2, unlockCost: 700 },
+            { id: 50, name: 'Prepositional Phalanx', category: 'Troop', type: 'Preposition', cost: 4, emoji: '🛡️', health: 100, damage: 25, speed: 1.4, range: 30, attackSpeed: 70, spawnCount: 3, unlockCost: 500, info: 'Over, under, through — a tight formation of three that shows position and surrounds the enemy.' },
+            { id: 51, name: 'Correlative Conjunction Twins', category: 'Troop', type: 'Conjunction', cost: 4, emoji: '👯', health: 220, damage: 35, speed: 1.4, range: 30, attackSpeed: 80, spawnCount: 2, unlockCost: 700, info: 'Either/or, neither/nor — correlative conjunctions always come in pairs, and so do these two.' },
 { 
     id: 32, 
     name: 'Subjunctive Mood Monk', 
@@ -2045,21 +2045,22 @@ const SPAWNED_CARDS = [
     damage: 20, 
     speed: 1.0, 
     range: 30, // Fixed Range
-    attackSpeed: 120, 
-    unlockCost: 1000 
+    attackSpeed: 120,
+    unlockCost: 1000,
+    info: "If I WERE you... The Subjunctive Mood Monk speaks of wishes and things contrary to fact — a slow, patient, sturdy defender."
 },
             { id: 33, name: 'Homophone Wizard', category: 'Troop', type: 'Homophone', cost: 5, emoji: '🧙', health: 340, damage: 115, speed: 0.9, range: 120, attackSpeed: 110, canAttackAir: true, splashRadius: 74, unlockCost: 800, info: 'To, too, two — one sound, three spellings. Lobs a splash that catches a whole cluster, air or ground.' },
-            { id: 36, name: 'Split Infinitive Splitter', category: 'Troop', type: 'Infinitive', cost: 4, emoji: '⚔️', health: 300, damage: 40, speed: 1.3, range: 30, attackSpeed: 80, unlockCost: 650 },
+            { id: 36, name: 'Split Infinitive Splitter', category: 'Troop', type: 'Infinitive', cost: 4, emoji: '⚔️', health: 300, damage: 40, speed: 1.3, range: 30, attackSpeed: 80, unlockCost: 650, info: 'To boldly go — it slips a word right between "to" and the verb, cleaving through the front line.' },
             { id: 37, name: 'Possessive Pronoun Parasite', category: 'Troop', type: 'Pronoun', cost: 3, emoji: '🕷️', health: 260, damage: 62, speed: 2.2, range: 30, attackSpeed: 55, lifesteal: 0.4, unlockCost: 750, info: "My, mine, its — it latches on and takes what's yours. Heals for 40% of the damage it deals." },
             { id: 38, name: 'Onomatopoeia Ogre', category: 'Troop', type: 'Onomatopoeia', cost: 6, emoji: '👹', health: 950, damage: 265, speed: 0.8, range: 35, attackSpeed: 120, unlockCost: 1100, info: 'SMASH! A slow, heavy bruiser that lands huge, ground-shaking blows. Great against tanks.' },
-            { id: 39, name: 'Em Dash Blitzer', category: 'Troop', type: 'Punctuation', cost: 4, emoji: '⚡', health: 380, damage: 60, speed: 1.4, range: 30, attackSpeed: 90, unlockCost: 950 },
+            { id: 39, name: 'Em Dash Blitzer', category: 'Troop', type: 'Punctuation', cost: 4, emoji: '⚡', health: 380, damage: 60, speed: 1.4, range: 30, attackSpeed: 90, unlockCost: 950, info: 'The em dash cuts in — suddenly, dramatically. A quick, punchy attacker that interrupts the enemy push.' },
             { id: 40, name: 'Sentence Fragment Scavenger', category: 'Troop', type: 'Fragment', cost: 2, emoji: '🦴', health: 190, damage: 60, speed: 1.6, range: 30, attackSpeed: 65, unlockCost: 300, info: 'A cheap, scrappy attacker that picks at whatever it can reach. Solid value for two Juice.' },
-            { id: 41, name: 'Vampire Verb Leech', category: 'Troop', type: 'Verb', cost: 4, emoji: '🦇', health: 350, damage: 50, speed: 1.3, range: 30, attackSpeed: 90, unlockCost: 850 },
-            { id: 42, name: 'Reflexive Pronoun Pugilist', category: 'Troop', type: 'Pronoun', cost: 4, emoji: '🥊', health: 500, damage: 40, speed: 1.0, range: 30, attackSpeed: 90, unlockCost: 900 },
+            { id: 41, name: 'Vampire Verb Leech', category: 'Troop', type: 'Verb', cost: 4, emoji: '🦇', health: 350, damage: 65, speed: 1.3, range: 30, attackSpeed: 90, lifesteal: 0.5, unlockCost: 850, info: 'An action verb that drains the life from its object — it heals for half the damage it deals.' },
+            { id: 42, name: 'Reflexive Pronoun Pugilist', category: 'Troop', type: 'Pronoun', cost: 4, emoji: '🥊', health: 500, damage: 40, speed: 1.0, range: 30, attackSpeed: 90, unlockCost: 900, info: 'Myself, yourself, itself — a reflexive pronoun turns the action back on itself. A tough bruiser that soaks up hits.' },
             { id: 43, name: 'Syntax Siphon', category: 'Spell', type: 'Syntax', cost: 3, emoji: '🌀', spellEffect: 'drain', drainAmount: 2, damage: 60, radius: 100, unlockCost: 900, info: 'Siphons the structure out of a sentence. Damages troops and drains 2 enemy Juice.' },
             { id: 52, name: 'Syntax Tax', category: 'Spell', type: 'Syntax', cost: 2, emoji: '💰', spellEffect: 'drain', drainAmount: 2, damage: 0, radius: 100, unlockCost: 800, info: 'Every sentence pays a tax. Steals 2 Juice from your opponent.' },
             { id: 53, name: 'Antonym Inverter', category: 'Spell', type: 'Antonym', cost: 4, emoji: '🔄', spellEffect: 'knockback', damage: 90, radius: 120, unlockCost: 1000, info: 'Flips meaning to its opposite — enemy troops are damaged and hurled backwards.' },
-            { id: 54, name: 'Cumulative Adjective Crusher', category: 'Troop', type: 'Adjective', cost: 4, emoji: '🔨', health: 600, damage: 40, speed: 1.0, range: 30, attackSpeed: 100, unlockCost: 850 },
+            { id: 54, name: 'Cumulative Adjective Crusher', category: 'Troop', type: 'Adjective', cost: 4, emoji: '🔨', health: 600, damage: 40, speed: 1.0, range: 30, attackSpeed: 100, unlockCost: 850, info: 'A big, beautiful, ancient, wooden hammer — adjectives stack up and up until they flatten the enemy. A sturdy front-line tank.' },
 { 
     id: 44, 
     name: 'Misplaced Modifier', 
@@ -5868,15 +5869,19 @@ class Unit {
         // (side is already obvious from position and the health-bar colour). It's
         // gone. Only the meaningful MASTERY glow on high-level cards remains, and
         // even that drops out on a crowded board (gameState.lowFx).
-        const glow = !gameState.lowFx;
+        // Mastery glow, SCOPED to the rank icon + emoji only. Previously the
+        // shadowBlur was set on the shared context, so it leaked onto the (now
+        // crisp) contact shadow, the status arcs and the health bar — blurring
+        // them and multiplying the gaussian cost across ~5 draws per unit.
+        const masteryGlow = this.level >= 5 && !gameState.lowFx;
+        const glowColor = this.level >= 11 ? "#00fbff" : "#FFD700";
         if (this.level >= 5) {
-            if (glow) {
-                ctx.shadowBlur = 22;
-                ctx.shadowColor = this.level >= 11 ? "#00fbff" : "#FFD700";
-            }
+            ctx.save();
+            if (masteryGlow) { ctx.shadowBlur = 22; ctx.shadowColor = glowColor; }
             const rankIcon = this.level >= 11 ? "👑" : (this.level >= 8 ? "🔥" : "⭐");
             ctx.font = "10px sans-serif";
             ctx.fillText(rankIcon, this.x + 12, this.y - 12);
+            ctx.restore();
         }
 
         // --- GAME FEEL ---
@@ -5910,6 +5915,7 @@ class Unit {
         ctx.save();
         ctx.translate(this.x, this.y + bob);
         ctx.scale(this.facing * squashX * pop, squashY * pop);
+        if (masteryGlow) { ctx.shadowBlur = 22; ctx.shadowColor = glowColor; }
         ctx.font = `${this.size * 1.6}px sans-serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText(this.card.emoji, 0, 0);
@@ -7688,10 +7694,14 @@ function actuallyStartGame(bonusJuice = false) {
     // on a losing streak drops trophies and immediately gets an easier opponent.
     gameState.difficultyFactor = Math.min(3.0, 1 + (playerData.trophies / 900));
 
-    // At higher difficulty the AI banks elixir faster — the standard RTS lever for
-    // a genuine challenge ceiling. Capped at a 40% edge so it stays beatable and
-    // never feels like the opponent is simply cheating.
-    gameState.opponentRegenBonus = 1 + Math.min(0.40, (gameState.difficultyFactor - 1) * 0.20);
+    // Elixir regen is the main difficulty lever. BEGINNERS (the first arena or two)
+    // get real breathing room — the AI regenerates a touch SLOWER than they do, so
+    // early battles are winnable and a struggling student isn't scared off. From
+    // there it climbs to a genuine edge (capped at +40%), the standard RTS ceiling.
+    const df = gameState.difficultyFactor;
+    gameState.opponentRegenBonus = df <= 1.25
+        ? 0.85 + (df - 1) * 0.6                        // 0.85× at arena 0, easing to 1.0×
+        : 1 + Math.min(0.40, (df - 1) * 0.20);
 
     // Prepare Player Deck (skip any id that no longer resolves to a real card,
     // which previously produced nameless {} entries that crashed the renderer)
@@ -10028,8 +10038,10 @@ function castSpell(card, x, y, owner) {
         }
         case 'mirror': {
             // Replays your last real card at +1 level. Nothing to echo yet → refund.
+            // Guard against echoing a Mirror (playCard already excludes recording one,
+            // but a stray value here would recurse into a stack overflow).
             const last = gameState[owner].lastRealCard;
-            if (!last) {
+            if (!last || last.spellEffect === 'mirror') {
                 gameState[owner].juice = Math.min(JUICE_MAX, gameState[owner].juice + (card.cost || 0));
                 if (owner === 'player') flashDenied('Nothing to echo yet — play a card first!');
                 break;
