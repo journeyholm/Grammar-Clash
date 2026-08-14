@@ -1333,7 +1333,7 @@ button, .card {
             <button id="deck-btn" class="btn-wood bangers-font text-3xl sm:text-4xl w-64">My Lexicon</button>
             <button id="shop-btn" class="btn-wood bangers-font text-3xl sm:text-4xl w-64">Daily Deals</button>
             <button id="stats-btn" class="btn-wood bangers-font text-3xl sm:text-4xl w-64">My Progress</button>
-            <button id="instructions-btn" class="btn-wood bangers-font text-3xl sm:text-4xl w-64">Syntax Guide</button>
+            <button id="instructions-btn" class="btn-wood bangers-font text-3xl sm:text-4xl w-64">How to Play</button>
             <!-- Half-width pair: the home column is already six buttons tall, and
                  two more full-size ones pushed the chest slots off a phone screen. -->
             <div class="grid grid-cols-2 gap-3 w-64">
@@ -1769,40 +1769,40 @@ const ARENAS = [
 const OPPONENTS = [
     { name: "Cadet Comma",      emoji: "🐣", arena: 0, style: 'balanced',
       taunt: "I'm still learning too!",
-      deck: [10, 55, 27, 1, 3, 56] },
+      deck: [10, 55, 27, 1, 3, 56, 119, 121] },
     { name: "Ms. Comma Splice", emoji: "🧵", arena: 0, style: 'swarm',
       taunt: "I join everything, everything joins me!",
       deck: [55, 62, 10, 1, 71, 74] },
     { name: "The Run-On Baron", emoji: "🎩", arena: 1, style: 'tank',
       taunt: "And then and then and THEN—",
-      deck: [0, 81, 11, 18, 3, 27] },
+      deck: [0, 81, 11, 18, 3, 27, 111, 117] },
     { name: "Sir Semicolon",    emoji: "🎻", arena: 1, style: 'control',
       taunt: "A pause; not a stop.",
-      deck: [25, 49, 73, 27, 9, 71] },
+      deck: [25, 49, 73, 27, 9, 71, 112, 121] },
     { name: "Professor Passive", emoji: "🧐", arena: 2, style: 'defensive',
       taunt: "Mistakes were made... by someone.",
-      deck: [63, 73, 68, 71, 27, 80] },
+      deck: [63, 73, 68, 71, 27, 80, 118] },
     { name: "The Dangler",      emoji: "🪝", arena: 2, style: 'swarm',
       taunt: "Running late, my modifiers were misplaced!",
       deck: [44, 62, 55, 102, 71, 69] },
     { name: "Root Baron Von Prefix", emoji: "🌳", arena: 3, style: 'balanced',
       taunt: "Pre-, re-, un- prepared for me?",
-      deck: [75, 11, 27, 56, 3, 79] },
+      deck: [75, 11, 27, 56, 3, 79, 113, 119] },
     { name: "Lady Malaprop",    emoji: "🦚", arena: 3, style: 'control',
       taunt: "You are the very pineapple of politeness!",
-      deck: [33, 9, 53, 71, 27, 22] },
+      deck: [33, 9, 53, 71, 27, 22, 114, 122] },
     { name: "The Hyperbolist",  emoji: "🌋", arena: 4, style: 'tank',
       taunt: "This is the BIGGEST battle in HISTORY!",
-      deck: [61, 0, 18, 3, 35, 83] },
+      deck: [61, 0, 18, 3, 35, 83, 111, 116] },
     { name: "Iron E. Maiden",   emoji: "🎭", arena: 4, style: 'defensive',
       taunt: "Oh, WONDERFUL. You brought troops.",
       deck: [84, 68, 73, 71, 27, 80] },
     { name: "The Narrator",     emoji: "📜", arena: 5, style: 'control',
       taunt: "Little did they know how this would end.",
-      deck: [70, 78, 71, 9, 64, 80] },
+      deck: [70, 78, 71, 9, 64, 80, 115, 120] },
     { name: "Chairman Claim",   emoji: "⚖️", arena: 6, style: 'balanced',
       taunt: "My evidence is overwhelming. Yours?",
-      deck: [26, 61, 66, 71, 80, 83] }
+      deck: [26, 61, 66, 71, 80, 83, 116, 112, 121] }
 ];
 
 // Style knobs the AI reads: how eagerly it pushes and how hard it defends.
@@ -1928,14 +1928,20 @@ const SPAWNED_CARDS = [
              { id: 100, name: 'Rubble', category: 'Troop', type: 'Noun', cost: 0, emoji: '🪨', health: 50, damage: 10, speed: 0.7, range: 30, attackSpeed: 120, isFlying: false, targetsBuildings: true },
              { id: 101, name: 'Dep. Clause', category: 'Troop', type: 'Clause', cost: 0, emoji: '🧩', health: 40, damage: 8, speed: 1.2, range: 30, attackSpeed: 70, isFlying: false, canAttackAir: false },
              { id: 102, name: 'Ambusher', category: 'Troop', type: 'Phrase', cost: 0, emoji: '👤', health: 55, damage: 22, speed: 1.8, range: 30, attackSpeed: 60, isFlying: false, canAttackAir: false },
-             { id: 103, name: 'Ind. Clause', category: 'Troop', type: 'Clause', cost: 0, emoji: '🏰', health: 120, damage: 25, speed: 1.2, range: 30, attackSpeed: 70, isFlying: false, canAttackAir: true }
+             { id: 103, name: 'Ind. Clause', category: 'Troop', type: 'Clause', cost: 0, emoji: '🏰', health: 120, damage: 25, speed: 1.2, range: 30, attackSpeed: 70, isFlying: false, canAttackAir: true },
+             // Thrown by the Bracket Barrel (fast, fragile melee).
+             { id: 108, name: 'Syntax Goblin', category: 'Troop', type: 'Syntax', cost: 0, emoji: '👺', health: 80, damage: 48, speed: 2.3, range: 30, attackSpeed: 55, isFlying: false, canAttackAir: false },
+             // Risen by the Fragment Graveyard (very weak, swarms in numbers).
+             { id: 109, name: 'Sentence Fragment', category: 'Troop', type: 'Fragment', cost: 0, emoji: '💀', health: 34, damage: 30, speed: 1.5, range: 30, attackSpeed: 70, isFlying: false, canAttackAir: false },
+             // Split off the Gerund Golem when it dies (two chunky building-targeters).
+             { id: 110, name: 'Gerund Golemite', category: 'Troop', type: 'Gerund', cost: 0, emoji: '🪨', health: 300, damage: 45, speed: 0.8, range: 30, attackSpeed: 120, isFlying: false, targetsBuildings: true }
         ];
 
         const ALL_CARDS = [
 { id: 0, name: 'Proper Noun King', category: 'Troop', type: 'Proper Noun', cost: 5, emoji: '👑', health: 950, damage: 75, speed: 0.5, range: 30, attackSpeed: 100, unlockCost: 0, info: 'Heavy Weight: High HP, slow movement.' },
 { id: 1, name: 'Collective Noun Horde', category: 'Troop', type: 'Collective Noun', cost: 4, emoji: '👥', health: 48, damage: 12, speed: 2.0, range: 30, attackSpeed: 50, spawnCount: 5, info: 'A plural swarm representing a group.' },            
 { id: 55, name: 'Noun Suffix Swarm', category: 'Troop', type: 'Suffix', cost: 1, emoji: '🐜', health: 60, damage: 10, speed: 2.0, range: 30, attackSpeed: 60, spawnCount: 5, isFlying: false, unlockCost: 50, info: 'Cheap swarm for defense.'},
-{ id: 2, name: 'Abstract Noun Ghost', category: 'Troop', type: 'Abstract Noun', cost: 3, emoji: '👻', health: 220, damage: 30, speed: 1.2, range: 35, attackSpeed: 85, isFlying: true, unlockCost: 200, info: 'Ethereal: Can fly over the river.' },
+{ id: 2, name: 'Abstract Noun Ghost', category: 'Troop', type: 'Abstract Noun', cost: 3, emoji: '👻', health: 260, damage: 52, speed: 1.3, range: 35, attackSpeed: 80, isFlying: true, unlockCost: 200, info: 'Ethereal — floats over the river to harass from the air. Ground troops that can\'t hit air are helpless against it.' },
             { id: 56, name: 'Determiner Dart Thrower', category: 'Troop', type: 'Determiner', cost: 2, emoji: '🎯', health: 100, damage: 30, speed: 1.8, range: 130, attackSpeed: 40, isFlying: false, canAttackAir: true, unlockCost: 200, info: 'A, an, the — points out exactly which target. Fast ranged attacker, hits air.'},
 { 
     id: 10, 
@@ -1956,12 +1962,12 @@ const SPAWNED_CARDS = [
     info: 'Standard infantry. Can hit flying enemies with pitchforks!' 
 },
 
-{ id: 11, name: 'Gerund Golem', category: 'Troop', type: 'Gerund', cost: 6, emoji: '🗿', health: 950, damage: 15, speed: 0.7, range: 30, attackSpeed: 120, isFlying: false, unlockCost: 400, info: 'Building Targeter: Splits on death.', targetsBuildings: true },
-            { id: 14, name: 'Participle Phantom', category: 'Troop', type: 'Participle', cost: 4, emoji: '🌑', health: 280, damage: 15, speed: 1.0, range: 40, attackSpeed: 60, isFlying: true, unlockCost: 400, info: 'An attacker that slows enemies.' },
-            { id: 17, name: 'Absolute Phrase Juggernaut', category: 'Troop', type: 'Absolute Phrase', cost: 7, emoji: '🛡️', health: 800, damage: 60, speed: 0.9, range: 30, attackSpeed: 150, isFlying: false, unlockCost: 800, info: 'A massive troop dealing area damage.' },
+{ id: 11, name: 'Gerund Golem', category: 'Troop', type: 'Gerund', cost: 6, emoji: '🗿', health: 1700, damage: 90, speed: 0.7, range: 30, attackSpeed: 120, isFlying: false, unlockCost: 400, info: 'A massive -ing tank that beelines your towers and splits into two Golemites when it falls.', targetsBuildings: true, deathSpawnId: 110, deathSpawnCount: 2 },
+            { id: 14, name: 'Participle Phantom', category: 'Troop', type: 'Participle', cost: 4, emoji: '🌑', health: 320, damage: 55, speed: 1.0, range: 40, attackSpeed: 60, isFlying: true, slowOnHit: 110, unlockCost: 400, info: 'A flying -ing shade whose chilling touch SLOWS whatever it hits to half speed.' },
+            { id: 17, name: 'Absolute Phrase Juggernaut', category: 'Troop', type: 'Absolute Phrase', cost: 7, emoji: '🛡️', health: 1500, damage: 130, speed: 0.9, range: 30, attackSpeed: 150, isFlying: false, splashRadius: 85, unlockCost: 800, info: 'A massive troop that cleaves every enemy around it. Slow, but it clears swarms and soaks a beating.' },
             { id: 18, name: 'Intensifier Ram', category: 'Troop', type: 'Intensifier', cost: 4, emoji: '🐏', health: 350, damage: 100, speed: 2.5, range: 30, attackSpeed: 90, isFlying: false, unlockCost: 600, info: 'Charges for double damage.' },
             { id: 27, name: 'Conjunction Archer', category: 'Troop', type: 'Conjunction', cost: 3, emoji: '🏹', health: 120, damage: 40, speed: 1.2, range: 140, attackSpeed: 50, isFlying: false, canAttackAir: true, unlockCost: 400, info: 'FANBOYS: for, and, nor, but, or, yet, so. Ranged attacker that hits air and ground.' },
-            { id: 28, name: 'Parenthetical Guards', category: 'Troop', type: 'Parenthetical', cost: 3, emoji: '⚔️', health: 120, damage: 20, speed: 1.5, range: 30, attackSpeed: 70, spawnCount: 2, unlockCost: 300, info: 'Tough troops with shields.' },
+            { id: 28, name: 'Parenthetical Guards', category: 'Troop', type: 'Parenthetical', cost: 3, emoji: '⚔️', health: 130, damage: 46, speed: 1.5, range: 30, attackSpeed: 70, spawnCount: 2, startShield: 160, unlockCost: 300, info: 'Two guards, each behind a 160-HP shield — like a parenthetical, the outer layer takes the hit first.' },
             { id: 50, name: 'Prepositional Phalanx', category: 'Troop', type: 'Preposition', cost: 4, emoji: '🛡️', health: 100, damage: 25, speed: 1.4, range: 30, attackSpeed: 70, spawnCount: 3, unlockCost: 500 },
             { id: 51, name: 'Correlative Conjunction Twins', category: 'Troop', type: 'Conjunction', cost: 4, emoji: '👯', health: 220, damage: 35, speed: 1.4, range: 30, attackSpeed: 80, spawnCount: 2, unlockCost: 700 },
 { 
@@ -1978,12 +1984,12 @@ const SPAWNED_CARDS = [
     attackSpeed: 120, 
     unlockCost: 1000 
 },
-            { id: 33, name: 'Homophone Wizard', category: 'Troop', type: 'Homophone', cost: 5, emoji: '🧙', health: 250, damage: 50, speed: 0.9, range: 120, attackSpeed: 110, canAttackAir: true, unlockCost: 800, info: 'To, too, two — sounds the same, hits differently. Ranged splash caster.' },
+            { id: 33, name: 'Homophone Wizard', category: 'Troop', type: 'Homophone', cost: 5, emoji: '🧙', health: 340, damage: 115, speed: 0.9, range: 120, attackSpeed: 110, canAttackAir: true, splashRadius: 74, unlockCost: 800, info: 'To, too, two — one sound, three spellings. Lobs a splash that catches a whole cluster, air or ground.' },
             { id: 36, name: 'Split Infinitive Splitter', category: 'Troop', type: 'Infinitive', cost: 4, emoji: '⚔️', health: 300, damage: 40, speed: 1.3, range: 30, attackSpeed: 80, unlockCost: 650 },
-            { id: 37, name: 'Possessive Pronoun Parasite', category: 'Troop', type: 'Pronoun', cost: 3, emoji: '🕷️', health: 100, damage: 10, speed: 2.2, range: 30, attackSpeed: 50, unlockCost: 750 },
-            { id: 38, name: 'Onomatopoeia Ogre', category: 'Troop', type: 'Onomatopoeia', cost: 6, emoji: '👹', health: 700, damage: 80, speed: 0.8, range: 35, attackSpeed: 120, unlockCost: 1100 },
+            { id: 37, name: 'Possessive Pronoun Parasite', category: 'Troop', type: 'Pronoun', cost: 3, emoji: '🕷️', health: 260, damage: 62, speed: 2.2, range: 30, attackSpeed: 55, lifesteal: 0.4, unlockCost: 750, info: "My, mine, its — it latches on and takes what's yours. Heals for 40% of the damage it deals." },
+            { id: 38, name: 'Onomatopoeia Ogre', category: 'Troop', type: 'Onomatopoeia', cost: 6, emoji: '👹', health: 950, damage: 265, speed: 0.8, range: 35, attackSpeed: 120, unlockCost: 1100, info: 'SMASH! A slow, heavy bruiser that lands huge, ground-shaking blows. Great against tanks.' },
             { id: 39, name: 'Em Dash Blitzer', category: 'Troop', type: 'Punctuation', cost: 4, emoji: '⚡', health: 380, damage: 60, speed: 1.4, range: 30, attackSpeed: 90, unlockCost: 950 },
-            { id: 40, name: 'Sentence Fragment Scavenger', category: 'Troop', type: 'Fragment', cost: 2, emoji: '🦴', health: 120, damage: 20, speed: 1.5, range: 30, attackSpeed: 70, unlockCost: 300 },
+            { id: 40, name: 'Sentence Fragment Scavenger', category: 'Troop', type: 'Fragment', cost: 2, emoji: '🦴', health: 190, damage: 60, speed: 1.6, range: 30, attackSpeed: 65, unlockCost: 300, info: 'A cheap, scrappy attacker that picks at whatever it can reach. Solid value for two Juice.' },
             { id: 41, name: 'Vampire Verb Leech', category: 'Troop', type: 'Verb', cost: 4, emoji: '🦇', health: 350, damage: 50, speed: 1.3, range: 30, attackSpeed: 90, unlockCost: 850 },
             { id: 42, name: 'Reflexive Pronoun Pugilist', category: 'Troop', type: 'Pronoun', cost: 4, emoji: '🥊', health: 500, damage: 40, speed: 1.0, range: 30, attackSpeed: 90, unlockCost: 900 },
             { id: 43, name: 'Syntax Siphon', category: 'Spell', type: 'Syntax', cost: 3, emoji: '🌀', spellEffect: 'drain', drainAmount: 2, damage: 60, radius: 100, unlockCost: 900, info: 'Siphons the structure out of a sentence. Damages troops and drains 2 enemy Juice.' },
@@ -1997,12 +2003,13 @@ const SPAWNED_CARDS = [
     type: 'Modifier', 
     cost: 3, 
     emoji: '🕷️', 
-    health: 250, 
-    damage: 50, 
-    speed: 1.3, 
+    health: 330,
+    damage: 72,
+    speed: 1.3,
     range: 30, // Fixed Range
-    attackSpeed: 90, 
-    unlockCost: 700 
+    attackSpeed: 85,
+    unlockCost: 700,
+    info: "A sturdy mid-cost bruiser — nothing fancy, just reliable pressure."
 },
             { id: 48, name: 'Tense Shift Trap', category: 'Spell', type: 'Tense', cost: 3, emoji: '⏳', spellEffect: 'slow', duration: 300, radius: 110, unlockCost: 600, info: 'Shifts enemies into the past tense — they slow to half speed.' },
             { id: 49, name: 'Semicolon Link', category: 'Building', type: 'Punctuation', cost: 3, emoji: '🔗', health: 400, damage: 0, speed: 0, duration: 1200, range: 0, unlockCost: 800, info: 'A sturdy link between clauses. Pure blocker — soaks damage, deals none.' },
@@ -2189,7 +2196,75 @@ const SPAWNED_CARDS = [
 
     // 10. REFLECTION TANK (Gap: Counter-Attacker)
     // Returns a % of damage taken back to the attacker.
-    { id: 84, name: 'Irony Maiden', category: 'Troop', type: 'Literary Device', cost: 4, emoji: '🛡️', health: 900, damage: 70, speed: 1.0, range: 30, attackSpeed: 110, unlockCost: 1000, info: 'Whatever you do to her happens to you. Reflects 30% of melee damage.' }
+    { id: 84, name: 'Irony Maiden', category: 'Troop', type: 'Literary Device', cost: 4, emoji: '🛡️', health: 900, damage: 70, speed: 1.0, range: 30, attackSpeed: 110, unlockCost: 1000, info: 'Whatever you do to her happens to you. Reflects 30% of melee damage.' },
+
+    // ========================================================================
+    // CLASH-ROYALE MECHANIC PACK (ELA-themed)
+    // The Log, Tornado, Miner, Goblin Barrel, Graveyard, a Prince and a Hog
+    // (charge units), an Elixir Pump, Spirits, and the Mirror — plus a Zap for
+    // counterplay. Stats are calibrated against the existing roster in the
+    // balance pass; see BALANCE notes.
+    // ========================================================================
+
+    // THE LOG — rolls up the lane, hitting everything it passes, then rolls off.
+    { id: 111, name: 'Run-On Roller', category: 'Spell', type: 'Sentence', cost: 2, emoji: '📜', spellEffect: 'log',
+      damage: 120, knockback: 46, rollReach: 340, rollSpeed: 6.5, rollWidth: 66, radius: 70, crownTowerDamageMultiplier: 0.4, unlockCost: 500,
+      info: "A run-on sentence barrels up the lane, flattening small troops and shoving the rest back. It never stops at the first clause." },
+
+    // TORNADO — drags enemy troops to a point. Pull a push onto your tower, or
+    // clump a swarm for your splash.
+    { id: 112, name: 'Conjunction Cyclone', category: 'Spell', type: 'Conjunction', cost: 3, emoji: '🌪️', spellEffect: 'pull',
+      damage: 14, radius: 155, duration: 75, pullStrength: 5, unlockCost: 700,
+      info: "'And, but, or' — coordinating conjunctions yank every enemy troop together into one spot. Set up a splash, or pull a push onto your own tower." },
+
+    // MINER — deploy ANYWHERE, even on the enemy tower.
+    { id: 113, name: 'Root Digger', category: 'Troop', type: 'Root', cost: 3, emoji: '⛏️', health: 850, damage: 150, speed: 1.7, range: 30, attackSpeed: 72,
+      deployAnywhere: true, unlockCost: 900,
+      info: "Digs beneath the map to a word's roots and surfaces ANYWHERE — right on top of the enemy's tower if you like." },
+
+    // GOBLIN BARREL — thrown squad at a target point.
+    { id: 114, name: 'Bracket Barrel', category: 'Spell', type: 'Parenthetical', cost: 3, emoji: '🛢️', spellEffect: 'summon',
+      summonId: 108, summonCount: 3, radius: 55, unlockCost: 700,
+      info: "(Aside!) A barrel of Syntax Goblins hurled wherever you point — a surprise interruption behind enemy lines." },
+
+    // GRAVEYARD — summons a stream of weak troops at a target area over time.
+    { id: 115, name: 'Fragment Graveyard', category: 'Spell', type: 'Fragment', cost: 5, emoji: '🪦', spellEffect: 'graveyard',
+      summonId: 109, summonCount: 16, spawnInterval: 17, duration: 300, radius: 95, unlockCost: 1200,
+      info: "Incomplete thoughts claw their way up around the enemy tower — a rising swarm of Sentence Fragments. Best paired with a tank." },
+
+    // PRINCE — charges into ANY target for a huge first hit.
+    { id: 116, name: 'The Protagonist', category: 'Troop', type: 'Literary Device', cost: 5, emoji: '🤴', health: 1300, damage: 220, speed: 1.2, range: 30, attackSpeed: 85,
+      charge: { distance: 120, bonusMult: 2 }, unlockCost: 1300,
+      info: "The hero of the story. Give him a clear run and his charging first strike hits for DOUBLE. A stun or knockback resets it." },
+
+    // HOG — fast, charges BUILDINGS only, ignores troops.
+    { id: 117, name: 'Predicate Hog', category: 'Troop', type: 'Predicate', cost: 4, emoji: '🐗', health: 950, damage: 150, speed: 2.5, range: 30, attackSpeed: 88,
+      targetsBuildings: true, charge: { distance: 110, bonusMult: 1.6 }, unlockCost: 900,
+      info: "The predicate drives straight for the tower and ignores everything in between — its charging first hit lands hard." },
+
+    // JUICE PUMP — generates elixir over its lifetime.
+    { id: 118, name: 'The Ink Well', category: 'Building', type: 'Editing', cost: 5, emoji: '🫙', health: 450, damage: 0, speed: 0, range: 0, attackSpeed: 60,
+      duration: 1980, juiceGen: { amount: 1, interval: 270 }, unlockCost: 1000,
+      info: "A slow, steady well of Juice — a tempo investment that snowballs if the enemy ignores it, but a well-aimed spell pops it." },
+
+    // FIRE SPIRIT — 1-cost kamikaze splash, engine of fast cycle.
+    { id: 119, name: 'Onomatopoeia Sprite', category: 'Troop', type: 'Onomatopoeia', cost: 1, emoji: '💥', health: 90, damage: 105, speed: 2.4, range: 30, attackSpeed: 60,
+      kamikaze: true, splashRadius: 62, unlockCost: 300,
+      info: "BOOM! A one-Juice sound-word that rushes the nearest enemy and bursts for area damage. Cheap enough to cycle back to your win condition." },
+
+    // ICE SPIRIT — 1-cost kamikaze that freezes on impact.
+    { id: 122, name: 'Shush Spirit', category: 'Troop', type: 'Interjection', cost: 1, emoji: '🤫', health: 90, damage: 55, speed: 2.2, range: 30, attackSpeed: 60,
+      kamikaze: true, splashRadius: 72, splashFreeze: 85, unlockCost: 300,
+      info: "Shhh! Rushes in and freezes a whole cluster of enemies for a moment — buying your tower precious time." },
+
+    // MIRROR — replays your last card at +1 level. Cost scales with that card.
+    { id: 120, name: 'Anaphora Mirror', category: 'Spell', type: 'Rhetoric', cost: 3, emoji: '🪞', spellEffect: 'mirror', unlockCost: 800,
+      info: "Anaphora repeats for effect. Plays your LAST card again, one level stronger — its Juice cost is that card's cost plus one." },
+
+    // ZAP — cheap stun that resets charges and clears the tiniest troops.
+    { id: 121, name: 'Exclamation Jolt', category: 'Spell', type: 'Exclamation', cost: 2, emoji: '⚡', spellEffect: 'burst',
+      damage: 80, radius: 92, stunDuration: 55, crownTowerDamageMultiplier: 0.35, unlockCost: 500,
+      info: "ZAP! A jolt of emphasis that stuns a whole area — resets a charging troop, finishes off Spirits and swarms." }
         ];
 
         // --- CARD DATA INTEGRITY ---
@@ -5166,6 +5241,17 @@ class Unit {
         this.attackAnim = 0;    // squash-and-stretch frames after swinging
         this.spawnAnim = 12;    // pop-in on deploy
         this.lastX = x; this.lastY = y;
+
+        // Charge mechanic (Prince / Hog): distance builds while moving unobstructed
+        // toward a target; at the threshold the next hit deals bonus damage. A
+        // knockback (or the Log/Tornado) resets it. Harmless on non-charge cards.
+        this.chargeDist = 0;
+        this.charged = false;
+        this.juiceGenTimer = 0;
+
+        // Shielded troops (the Guards) spawn behind a barrier that soaks damage
+        // until it breaks. Long duration — it only ends when depleted.
+        if (card.startShield) this.effects.shield = { health: card.startShield, duration: 999999 };
     }
 
     get isBuilding() { return this.card.category === 'Building'; }
@@ -5192,6 +5278,22 @@ class Unit {
             if (this.spawnTimer >= (this.card.spawnInterval || 300)) {
                 this.spawnTimer = 0;
                 this.spawnUnit(this.card.spawnUnitId);
+            }
+        }
+
+        // 1b. Juice Pump — generates elixir for its owner over its lifetime. The
+        // classic "pump": a tempo investment that snowballs if the enemy ignores it.
+        if (this.card.juiceGen) {
+            this.juiceGenTimer++;
+            if (this.juiceGenTimer >= (this.card.juiceGen.interval || 210)) {
+                this.juiceGenTimer = 0;
+                gameState[this.owner].juice = Math.min(JUICE_MAX,
+                    gameState[this.owner].juice + (this.card.juiceGen.amount || 1));
+                if (this.owner === 'player') {
+                    gameState.damageIndicators.push(new DamageIndicator(this.x, this.y - 12,
+                        '+' + (this.card.juiceGen.amount || 1) + ' Juice', '#f0abfc'));
+                }
+                gameState.particles.push(new Particle(this.x, this.y));
             }
         }
 
@@ -5303,6 +5405,19 @@ class Unit {
         this.x += Math.cos(angle) * this.speed;
         this.y += Math.sin(angle) * this.speed;
         this.clampToArena();
+        this.buildCharge();
+    }
+
+    // Charge builds while moving unobstructed toward a target. Reset by knockback
+    // and stuns (Log, Tornado, knockback spells, freeze) — not by ordinary hits,
+    // exactly like Clash Royale's Prince/Hog.
+    buildCharge() {
+        if (!this.card.charge) return;
+        this.chargeDist += this.speed;
+        if (!this.charged && this.chargeDist >= (this.card.charge.distance || 120)) {
+            this.charged = true;
+            gameState.damageIndicators.push(new DamageIndicator(this.x, this.y - 16, 'CHARGE!', '#fbbf24'));
+        }
     }
 
     clampToArena() {
@@ -5352,6 +5467,7 @@ class Unit {
         if (this.isBuilding || !this.speed) return;
         this.y += (this.owner === 'player' ? -1 : 1) * this.speed * 0.5;
         this.clampToArena();
+        this.buildCharge();
     }
 
     takeDamage(amount, source, isReflection = false) {
@@ -5409,7 +5525,37 @@ class Unit {
         if (target.x !== undefined) this.facing = (target.x >= this.x) ? 1 : -1;
         // Rage scales the hit at the point of use, so it applies to melee, ranged
         // projectiles and chain arcs alike without touching this.damage itself.
-        const dmg = Math.round(this.damage * this.damageMultiplier());
+        let dmg = Math.round(this.damage * this.damageMultiplier());
+
+        // Charge payoff: a big first hit, then the charge is spent.
+        if (this.card.charge && this.charged) {
+            dmg = Math.round(dmg * (this.card.charge.bonusMult || 2));
+            this.charged = false; this.chargeDist = 0;
+            gameState.effects.push(new Effect(this.x, this.y, { effectType: 'knockback', radius: 42, duration: 18 }));
+            gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 4);
+        }
+
+        // Spirit units: rush in, burst once for area damage, then perish.
+        if (this.card.kamikaze) {
+            const r = this.card.splashRadius || 55;
+            const foes = this.owner === 'player' ? gameState.opponent : gameState.player;
+            foes.units.forEach(u => {
+                if (u.health > 0 && distance(this.x, this.y, u.x, u.y) < r) {
+                    u.takeDamage(dmg, this);
+                    if (this.card.splashFreeze && u.health > 0) u.applyStatus('frozen', this.card.splashFreeze);
+                }
+            });
+            foes.towers.forEach(t => { if (t.health > 0 && distance(this.x, this.y, t.x, t.y) < r + t.size) t.takeDamage(dmg, 0.35); });
+            gameState.effects.push(new Effect(this.x, this.y, { effectType: 'explosion', vfx: damageVfxFor(this.card), radius: r, duration: 22 }));
+            for (let i = 0; i < 8; i++) gameState.particles.push(new Particle(this.x, this.y));
+            playSound('hit');
+            // Self-destruct with the normal death visuals (no self damage number).
+            this.health = 0;
+            gameState.corpses.push(new Corpse(this.x, this.y, this.card.emoji, this.size,
+                this.card.isFlying ? 'spiral' : 'topple', this.owner));
+            return;
+        }
+
         if (this.isHealer) {
             if (target.health < target.maxHealth) {
                 const heal = Math.abs(dmg);
@@ -5442,6 +5588,22 @@ class Unit {
             playSound('shoot');
         } else {
             if (target.takeDamage) target.takeDamage(dmg, this);
+            // Melee splash — a cleaving attacker (the Juggernaut) hits everything
+            // bunched around its target.
+            if (this.card.splashRadius) {
+                const foes = this.owner === 'player' ? gameState.opponent : gameState.player;
+                foes.units.forEach(u => {
+                    if (u !== target && u.health > 0 && distance(target.x, target.y, u.x, u.y) < this.card.splashRadius)
+                        u.takeDamage(dmg, this);
+                });
+                gameState.effects.push(new Effect(target.x, target.y, { effectType: 'explosion', radius: this.card.splashRadius, duration: 16 }));
+            }
+            // Lifesteal — the Parasite drains health from what it bites.
+            if (this.card.lifesteal && this.health > 0) {
+                this.health = Math.min(this.maxHealth, this.health + Math.round(dmg * this.card.lifesteal));
+            }
+            // Chilling attacker (the Participle Phantom) slows what it hits.
+            if (this.card.slowOnHit && target.applyStatus) target.applyStatus('slow', this.card.slowOnHit);
             playSound('hit');
         }
     }
@@ -5449,6 +5611,7 @@ class Unit {
     applyStatus(type, duration, magnitude = 0) {
         if (type === 'frozen') {
             this.effects.frozen = { duration: duration };
+            this.chargeDist = 0; this.charged = false;   // a stun breaks a charge
         }
         else if (type === 'haste') {
             this.effects.haste = { duration: duration };
@@ -5741,6 +5904,177 @@ class FlyingCrown {
     }
 }
 
+// ============================================================================
+// BATTLEFIELD HAZARDS (Clash Royale staples, ELA-themed)
+// Each is a self-managing entity with update()/draw()/`done`, pushed to
+// gameState.hazards and handled polymorphically alongside corpses.
+// ============================================================================
+
+// THE LOG — a spell that rolls up one lane, damaging + knocking back everything
+// it passes THROUGH (it doesn't stop at the first hit) and rolls off the far edge.
+class RollingLog {
+    constructor(x, y, owner, card) {
+        this.x = x; this.y = y; this.owner = owner; this.card = card;
+        this.dir = owner === 'player' ? -1 : 1;      // rolls toward the enemy
+        this.speed = card.rollSpeed || 6;
+        this.reach = card.rollReach || 320;          // how far it travels
+        this.travelled = 0;
+        this.width = card.rollWidth || 70;           // lane half-width it sweeps
+        this.damage = card.damage || 120;
+        this.knock = card.knockback || 46;
+        this.roll = 0;                               // visual rotation
+        this.hit = new Set();                        // damage each unit once
+        this.done = false;
+    }
+    get enemyKey() { return this.owner === 'player' ? 'opponent' : 'player'; }
+    update() {
+        this.y += this.dir * this.speed;
+        this.travelled += this.speed;
+        this.roll += this.dir * -0.35;
+        const foes = gameState[this.enemyKey];
+        foes.units.forEach(u => {
+            if (u.health <= 0 || this.hit.has(u)) return;
+            if (Math.abs(u.x - this.x) < this.width && Math.abs(u.y - this.y) < 34) {
+                this.hit.add(u);
+                u.takeDamage(this.damage, null);
+                if (u.health > 0 && !u.isBuilding) {
+                    u.y += this.dir * this.knock;      // shoved back down the lane
+                    u.clampToArena();
+                    u.target = null;
+                    if (u.chargeDist !== undefined) u.chargeDist = 0;   // resets charges
+                }
+            }
+        });
+        // The Log also chips the crown tower it rolls into, at reduced spell rate.
+        if (this.travelled > this.reach ||
+            this.y < -20 || this.y > ARENA_HEIGHT + 20) this.done = true;
+    }
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.roll);
+        // A stout wooden roll (a rolled-up scroll of run-on text).
+        const w = this.width, h = 26;
+        const g = ctx.createLinearGradient(0, -h, 0, h);
+        g.addColorStop(0, '#a8712f'); g.addColorStop(0.5, '#7c4a1e'); g.addColorStop(1, '#5b3413');
+        ctx.fillStyle = g;
+        ctx.strokeStyle = '#3e2410'; ctx.lineWidth = 3;
+        if (ctx.roundRect) { ctx.beginPath(); ctx.roundRect(-w, -h, w * 2, h * 2, h); ctx.fill(); ctx.stroke(); }
+        else { ctx.fillRect(-w, -h, w * 2, h * 2); ctx.strokeRect(-w, -h, w * 2, h * 2); }
+        // end grain rings
+        ctx.strokeStyle = 'rgba(0,0,0,.35)';
+        for (let r = 6; r < h; r += 7) { ctx.beginPath(); ctx.ellipse(-w + 10, 0, 5, r, 0, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.ellipse(w - 10, 0, 5, r, 0, 0, Math.PI * 2); ctx.stroke(); }
+        ctx.restore();
+    }
+}
+
+// TORNADO — a pull-field. For a short duration it drags enemy troops toward a
+// point (and chips them), setting up splash or pulling a push onto your tower.
+class Tornado {
+    constructor(x, y, owner, card) {
+        this.x = x; this.y = y; this.owner = owner; this.card = card;
+        this.radius = card.radius || 150;
+        this.duration = card.duration || 60;
+        this.maxDuration = this.duration;
+        this.pullStrength = card.pullStrength || 4.5;
+        this.tickDamage = card.damage || 0;          // small per-tick chip
+        this.spin = 0;
+        this.done = false;
+    }
+    get enemyKey() { return this.owner === 'player' ? 'opponent' : 'player'; }
+    update() {
+        this.duration--;
+        this.spin += 0.4;
+        gameState[this.enemyKey].units.forEach(u => {
+            if (u.health <= 0 || u.isBuilding) return;
+            const d = distance(this.x, this.y, u.x, u.y);
+            if (d > this.radius) return;
+            const ang = Math.atan2(this.y - u.y, this.x - u.x);
+            const pull = this.pullStrength * (0.4 + 0.6 * (d / this.radius)); // stronger at the edge
+            u.x += Math.cos(ang) * pull;
+            u.y += Math.sin(ang) * pull;
+            u.clampToArena();
+            u.target = null;
+            if (this.tickDamage && this.duration % 15 === 0) u.takeDamage(this.tickDamage, null);
+        });
+        if (this.duration <= 0) this.done = true;
+    }
+    draw() {
+        const p = this.duration / this.maxDuration;
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, p * 1.6) * 0.8;
+        ctx.translate(this.x, this.y);
+        for (let arm = 0; arm < 3; arm++) {
+            ctx.beginPath();
+            const off = this.spin + arm * (Math.PI * 2 / 3);
+            for (let t = 0; t <= 1; t += 0.08) {
+                const ang = off + t * Math.PI * 3.2;
+                const r = this.radius * t;
+                const px = Math.cos(ang) * r, py = Math.sin(ang) * r * 0.7;
+                t === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+            }
+            ctx.strokeStyle = 'rgba(203,213,225,.85)';
+            ctx.lineWidth = 3; ctx.stroke();
+        }
+        ctx.restore();
+    }
+}
+
+// GRAVEYARD — a spawn-over-time field. Summons a stream of weak troops at the
+// target area for its duration (a swarm that materialises around the enemy).
+class Graveyard {
+    constructor(x, y, owner, card) {
+        this.x = x; this.y = y; this.owner = owner; this.card = card;
+        this.radius = card.radius || 90;
+        this.duration = card.duration || 240;
+        this.maxDuration = this.duration;
+        this.interval = card.spawnInterval || 20;
+        this.timer = 0;
+        this.summonId = card.summonId;
+        this.remaining = card.summonCount || 12;
+        this.motes = [];
+        this.done = false;
+    }
+    update() {
+        this.duration--;
+        this.timer++;
+        if (this.timer >= this.interval && this.remaining > 0) {
+            this.timer = 0; this.remaining--;
+            const sc = getCardById(this.summonId);
+            if (sc) {
+                const ang = Math.random() * Math.PI * 2, r = Math.random() * this.radius;
+                const ux = this.x + Math.cos(ang) * r, uy = this.y + Math.sin(ang) * r * 0.7;
+                const u = new Unit(sc, ux, uy, this.owner, this.card.level || 1);
+                u.deployTimer = 12;
+                u.clampToArena();
+                gameState[this.owner].units.push(u);
+                this.motes.push({ x: ux, y: uy, life: 18 });
+            }
+        }
+        this.motes.forEach(m => m.life--);
+        this.motes = this.motes.filter(m => m.life > 0);
+        if (this.duration <= 0) this.done = true;
+    }
+    draw() {
+        const p = Math.max(0, this.duration / this.maxDuration);
+        ctx.save();
+        ctx.globalAlpha = 0.5 * p + 0.15;
+        ctx.beginPath();
+        ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.7, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(88,28,135,.35)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(168,85,247,.7)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.restore();
+        ctx.save();
+        this.motes.forEach(m => {
+            ctx.globalAlpha = m.life / 18;
+            ctx.fillStyle = '#c084fc';
+            ctx.beginPath(); ctx.arc(m.x, m.y - (18 - m.life), 3, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.restore();
+    }
+}
+
 class Projectile {
             constructor(source, target) {
                 this.x = source.x; this.y = source.y;
@@ -5752,6 +6086,8 @@ class Projectile {
                 // shouldn't retroactively weaken a shot already in the air.
                 this.damage = Math.round(source.damage *
                     (source.damageMultiplier ? source.damageMultiplier() : 1));
+                this.splashRadius = source.card.splashRadius || 0;   // area-on-impact
+                this.slowOnHit = source.card.slowOnHit || 0;         // chilling shots
                 this.health = 1;
                 this.life = 180; // never orbit forever if the target teleports
 
@@ -5775,6 +6111,17 @@ class Projectile {
                 }
                 if (distance(this.x, this.y, this.target.x, this.target.y) < 12) {
                     if (this.target.takeDamage) this.target.takeDamage(this.damage, this.sourceUnit);
+                    if (this.slowOnHit && this.target.applyStatus) this.target.applyStatus('slow', this.slowOnHit);
+                    // Splash on impact — a ranged area attacker (the Wizard) catches
+                    // every enemy troop clustered around the point of impact.
+                    if (this.splashRadius) {
+                        const foes = this.owner === 'player' ? gameState.opponent : gameState.player;
+                        foes.units.forEach(u => {
+                            if (u !== this.target && u.health > 0 && distance(this.x, this.y, u.x, u.y) < this.splashRadius)
+                                u.takeDamage(this.damage, this.sourceUnit);
+                        });
+                        gameState.effects.push(new Effect(this.x, this.y, { effectType: 'explosion', radius: this.splashRadius, duration: 18 }));
+                    }
                     // Impact burst: a ring plus a few sparks.
                     gameState.effects.push(new Effect(this.x, this.y,
                         { effectType: 'explosion', radius: this.kind === 'lob' ? 26 : 14, duration: 16 }));
@@ -6302,7 +6649,7 @@ function resetGameState() {
         player: { juice: 5, units: [], towers: [], hand: [], gameDeck: [], discard: [], lastPlayedCard: null, lastPlayedTime: 0, lastPlayedPos: { x: 0, y: 0 }, goldEarnedThisMatch: 0, handKey: 0, neuralLockout: 0 },
         opponent: { juice: 5, units: [], towers: [], hand: [], gameDeck: [], discard: [], playCooldown: 120, lastPlayedCard: null, lastPlayedTime: 0, lastPlayedPos: { x: 0, y: 0 } },
         projectiles: [], effects: [], damageIndicators: [], particles: [], beams: [], floatText: [],
-        flyingCrowns: [], corpses: [], ambience: [], hitStop: 0, inspecting: null, introTimer: 165,
+        flyingCrowns: [], corpses: [], ambience: [], hazards: [], hitStop: 0, inspecting: null, introTimer: 165,
         answeredThisMatch: { right: 0, wrong: 0 },
         // Which arena's weather to run. Set from trophies at match start.
         arenaId: getArena(playerData ? playerData.trophies : 0).id,
@@ -6599,7 +6946,7 @@ if (gameState.ambience) gameState.ambience.forEach(m => m.draw());
             // Render Game Objects (sorted so lower units overlap correctly)
             const units = [...gameState.player.units, ...gameState.opponent.units].sort((a, b) => a.y - b.y);
             const drawables = [...gameState.player.towers, ...gameState.opponent.towers,
-                               ...gameState.corpses, ...units,
+                               ...gameState.corpses, ...units, ...gameState.hazards,
                                ...gameState.projectiles, ...gameState.effects, ...gameState.particles,
                                ...gameState.damageIndicators];
             drawables.forEach(o => { if(o && o.draw) o.draw(); });
@@ -6938,6 +7285,10 @@ function step() {
     gameState.flyingCrowns = gameState.flyingCrowns.filter(c => !c.done);
     gameState.corpses.forEach(c => c.update());
     gameState.corpses = gameState.corpses.filter(c => !c.done);
+    // Persistent battlefield hazards (rolling logs, tornado pull-fields, graveyards)
+    // — polymorphic: each has update()/draw()/done, like corpses.
+    gameState.hazards.forEach(h => h.update());
+    gameState.hazards = gameState.hazards.filter(h => !h.done);
     updateAmbience();
 
     // --- RENDER POOL CAPS ---
@@ -7162,113 +7513,169 @@ function opponentAI() {
 
     const LEFT_LANE_X = ARENA_WIDTH * 0.25;
     const RIGHT_LANE_X = ARENA_WIDTH * 0.75;
+    const style = gameState.opponentStyle || OPPONENT_STYLES.balanced;
+    // How clever the AI is allowed to be — low arenas play a simple game so new
+    // students can win; the advanced branches (Tornado clumps, chip on the weak
+    // tower, Pump economy, Zap resets) only switch on as difficulty climbs.
+    const smart = diff >= 1.5;
+    const veryS = diff >= 2.2;
 
     // --- 1. READ THE BOARD ---
-    // "Threats" now includes anything past the midline OR heading for the bridge,
-    // so the AI reacts while a push is forming instead of only after it lands.
     const threats = player.units.filter(u => u.health > 0 && u.y < RIVER_Y + 90 && u.card.category !== 'Building');
-    const leftThreats = threats.filter(u => u.x < ARENA_WIDTH / 2);
-    const rightThreats = threats.filter(u => u.x >= ARENA_WIDTH / 2);
     const threatValue = threats.reduce((s, u) => s + u.health, 0);
-
-    const playable = opp.hand.filter(c => opp.juice >= c.cost);
-    if (playable.length === 0) { opp.playCooldown = 20; return; }
-
-    const byCostDesc = [...playable].sort((a, b) => b.cost - a.cost);
-    const tanks    = playable.filter(c => c.health >= 600 && c.category !== 'Building');
-    const ranged   = playable.filter(c => c.range >= 60 && c.category === 'Troop');
-    const swarms   = playable.filter(c => (c.spawnCount || 1) >= 3);
-    const spells   = playable.filter(c => c.category === 'Spell' && c.damage > 0);
-    const buildings= playable.filter(c => c.category === 'Building' && c.damage > 0);
-    const airDef   = playable.filter(c => c.canAttackAir || c.range >= 60);
     const flyingThreats = threats.filter(u => u.card.isFlying);
+    const siegeThreats  = threats.filter(u => u.card.targetsBuildings);      // Hogs/Rams ignore troops
+    const chargedThreats= threats.filter(u => u.charged);
+
+    // Densest cluster: the enemy troop with the most neighbours nearby.
+    let clusterTarget = null, clusterCount = 0;
+    threats.forEach(u => {
+        const n = threats.filter(o => distance(u.x, u.y, o.x, o.y) < 95).length;
+        if (n > clusterCount) { clusterCount = n; clusterTarget = u; }
+    });
+
+    // The player tower to pressure: an alive side tower first (lowest HP), else King.
+    const plyTowers = player.towers.filter(t => t.health > 0);
+    const attackTower = [...plyTowers].sort((a, b) => (a.isKing ? 1 : 0) - (b.isKing ? 1 : 0) || a.health - b.health)[0];
+    const weakPlyTower = [...plyTowers].sort((a, b) => a.health / a.maxHealth - b.health / b.maxHealth)[0];
+
+    const playable = opp.hand.filter(c => opp.juice >= (c.cost || 0));
+    if (playable.length === 0) { opp.playCooldown = 22; return; }
+    const has = pred => playable.filter(pred);
+
+    const winTanks   = has(c => c.category !== 'Building' && (c.health || 0) >= 800 && !c.targetsBuildings);
+    const siege      = has(c => c.targetsBuildings && c.category === 'Troop');
+    const miner      = has(c => c.deployAnywhere);
+    const ranged     = has(c => c.range >= 60 && c.category === 'Troop');
+    const splashers  = has(c => c.splashRadius && c.category === 'Troop');
+    const swarms     = has(c => (c.spawnCount || 1) >= 3);
+    const spirits    = has(c => c.kamikaze);
+    const airDef     = has(c => (c.canAttackAir || c.range >= 60) && c.category === 'Troop');
+    const dmgSpells  = has(c => c.category === 'Spell' && (c.damage || 0) > 0 && ['damage', 'burst', 'log', 'knockback', 'poison', 'drain'].includes(c.spellEffect));
+    const zap        = has(c => c.category === 'Spell' && c.spellEffect === 'burst' && (c.cost || 9) <= 2);
+    const tornado    = has(c => c.spellEffect === 'pull');
+    const logSpell   = has(c => c.spellEffect === 'log');
+    const graveyard  = has(c => c.spellEffect === 'graveyard');
+    const barrel     = has(c => c.spellEffect === 'summon');
+    const defBuild   = has(c => c.category === 'Building' && ((c.damage || 0) > 0 || c.spawnUnitId));
+    const pump       = has(c => c.category === 'Building' && c.juiceGen);
+    const cheapest   = [...playable].sort((a, b) => (a.cost || 0) - (b.cost || 0));
+    const bestDmgSpell = (list) => [...list].sort((a, b) => (b.damage * (b.radius || 60)) - (a.damage * (a.radius || 60)))[0];
+
+    // Placement helpers (the AI defends the TOP; the player attacks upward).
+    const behindThreat = (t, back) => ({ x: t.x, y: t.y - back });     // between threat and AI towers
+    const buildSpot    = (t) => ({ x: ARENA_WIDTH / 2 + ((t ? t.x : ARENA_WIDTH / 2) - ARENA_WIDTH / 2) * 0.35, y: RIVER_Y - 110 });
+    const laneSpot     = (laneX) => ({ x: laneX, y: 90 });
+    const towerSpot    = (tw) => ({ x: tw.x, y: tw.y });
 
     let action = null;
+    const pick = (card, pos) => { if (!action && card) action = { card, x: pos.x, y: pos.y }; };
+    const defendBias = style.defendBias;
+    const bigThreat = threatValue * defendBias > 60 || threats.length > 1;
 
-    // --- 2. DEFENCE ---
-    const defendBias = (gameState.opponentStyle || OPPONENT_STYLES.balanced).defendBias;
-    if (threats.length > 0 && (threatValue * defendBias > 60 || threats.length > 1)) {
-        const busyLane = leftThreats.length >= rightThreats.length ? leftThreats : rightThreats;
-        const target = busyLane[0] || threats[0];
-        if (target) {
-            let card = null;
-
-            // A tight cluster of enemies is worth a spell.
-            const clustered = threats.filter(u => distance(u.x, u.y, target.x, target.y) < 90);
-            if (spells.length && clustered.length >= 3) {
-                card = spells.sort((a, b) => (b.damage * (b.radius || 60)) - (a.damage * (a.radius || 60)))[0];
-                action = { card, x: target.x, y: target.y };
-            }
-            // Air needs an answer that can actually shoot up.
-            else if (flyingThreats.length && airDef.length) {
-                card = airDef.find(c => c.canAttackAir) || airDef[0];
-                action = { card, x: target.x, y: Math.max(90, target.y - 70) };
-            }
-            // Big tank incoming: swarm it, or drop a building to pull it.
-            else if (threatValue > 700) {
-                card = swarms[0] || buildings[0] || byCostDesc[0];
-                const isBuilding = card.category === 'Building';
-                action = { card, x: isBuilding ? ARENA_WIDTH / 2 : target.x, y: isBuilding ? 200 : Math.max(90, target.y - 40) };
-            }
-            // Otherwise meet it with the best value defender available.
-            else {
-                card = ranged[0] || swarms[0] || tanks[0] || playable[0];
-                const back = card.range >= 60 ? 80 : 40;
-                action = { card, x: target.x, y: Math.max(80, target.y - back) };
-            }
-        }
+    // === PRIORITY A — STUN A CHARGE / CLEAR A SWARM WITH ZAP ===============
+    if (smart && zap.length) {
+        if (chargedThreats.length) pick(zap[0], { x: chargedThreats[0].x, y: chargedThreats[0].y });
+        else if (clusterTarget && clusterCount >= 3 && threats.every(u => (u.health || 0) <= 140))
+            pick(zap[0], { x: clusterTarget.x, y: clusterTarget.y });
     }
 
-    // --- 3. OFFENCE ---
-    // The old AI hoarded until 8.5 juice, so it barely attacked. It now pushes at a
-    // threshold that tightens as difficulty rises, and commits to one lane.
+    // === PRIORITY B — ANSWER A BUILDING-TARGETER (Hog/Ram) ================
+    // These walk past your troops, so a building to pull them (or heavy DPS) is
+    // the real answer.
+    if (!action && siegeThreats.length) {
+        const t = siegeThreats[0];
+        if (defBuild.length) pick(defBuild[0], buildSpot(t));
+        else if (splashers.length) pick(splashers[0], behindThreat(t, 30));
+        else if (ranged.length) pick(ranged[0], behindThreat(t, 55));
+        else if (winTanks.length) pick(winTanks[0], behindThreat(t, 20));
+    }
+
+    // === PRIORITY C — SPELL A CLUSTER FOR VALUE ==========================
+    if (!action && clusterTarget && clusterCount >= 3) {
+        if (dmgSpells.length) pick(bestDmgSpell(dmgSpells), { x: clusterTarget.x, y: clusterTarget.y });
+        else if (logSpell.length && threats.every(u => (u.health || 0) <= 260)) pick(logSpell[0], { x: clusterTarget.x, y: clusterTarget.y + 40 });
+        // Tornado: drag a spread-out group together onto the AI's own tower row,
+        // where three towers can focus them (and it chips them on the way).
+        else if (veryS && tornado.length && clusterCount >= 2) pick(tornado[0], { x: clusterTarget.x, y: 150 });
+    }
+
+    // === PRIORITY D — AIR DEFENCE ========================================
+    if (!action && flyingThreats.length) {
+        const t = flyingThreats[0];
+        if (airDef.length) pick(airDef.find(c => c.canAttackAir) || airDef[0], behindThreat(t, 60));
+        else if (dmgSpells.length) pick(bestDmgSpell(dmgSpells), { x: t.x, y: t.y });
+    }
+
+    // === PRIORITY E — GENERAL DEFENCE ====================================
+    if (!action && threats.length && bigThreat) {
+        const t = clusterTarget || threats[0];
+        if (clusterCount >= 3 && splashers.length) pick(splashers[0], behindThreat(t, 35));
+        else if (threatValue > 700 && (defBuild.length || splashers.length || ranged.length))
+            pick(defBuild[0] || splashers[0] || ranged[0], defBuild.length ? buildSpot(t) : behindThreat(t, 45));
+        else if (spirits.length && threatValue < 300) pick(spirits[0], behindThreat(t, 10));
+        else pick(ranged[0] || splashers[0] || swarms[0] || winTanks[0] || cheapest[0], behindThreat(t, ranged.length ? 70 : 35));
+    }
+
+    // === PRIORITY F — CHIP A WEAK TOWER (finish it off) ==================
+    if (!action && smart && weakPlyTower && weakPlyTower.health / weakPlyTower.maxHealth < 0.32) {
+        if (miner.length) pick(miner[0], towerSpot(weakPlyTower));
+        else if (barrel.length) pick(barrel[0], towerSpot(weakPlyTower));
+        else if (dmgSpells.length && weakPlyTower.health < 180) pick(bestDmgSpell(dmgSpells), towerSpot(weakPlyTower));
+    }
+
+    // === PRIORITY G — OFFENCE (when flush and reasonably safe) ===========
     if (!action) {
-        const style = gameState.opponentStyle || OPPONENT_STYLES.balanced;
         const pushThreshold = Math.max(3.5, 9 - diff * 1.6 + style.pushThresholdMod);
-        const doublePush = gameState.isDoubleJuice;
-        if (opp.juice >= pushThreshold || doublePush) {
-            if (opp.pushLane === undefined || Math.random() < 0.15) {
-                opp.pushLane = Math.random() > 0.5 ? LEFT_LANE_X : RIGHT_LANE_X;
-            }
-            const laneX = opp.pushLane;
-
-            // Tank first from the back, then support behind it.
+        const safe = threatValue < 250;
+        if ((opp.juice >= pushThreshold || gameState.isDoubleJuice) && (safe || opp.juice >= 9)) {
+            // Aim at the tower we're pressuring; keep a lane commitment.
+            const laneX = attackTower ? attackTower.x : (opp.pushLane || ARENA_WIDTH / 2);
+            opp.pushLane = laneX;
             const ourPush = opp.units.filter(u => u.y > 120 && u.card.category !== 'Building');
-            if (tanks.length && ourPush.length === 0) {
-                action = { card: tanks[0], x: laneX, y: 90 };
-            } else if (ourPush.length > 0 && (ranged.length || swarms.length)) {
-                const support = ranged[0] || swarms[0];
-                action = { card: support, x: laneX, y: Math.max(80, Math.min(...ourPush.map(u => u.y)) - 45) };
-            } else {
-                const cheapest = [...playable].sort((a, b) => a.cost - b.cost)[0];
-                action = { card: cheapest, x: laneX, y: RIVER_Y - 50 };
+
+            if (winTanks.length && ourPush.length === 0) pick(winTanks[0], laneSpot(laneX));
+            else if (siege.length && ourPush.length === 0) pick(siege[0], laneSpot(laneX));
+            else if (ourPush.length > 0) {
+                // Support the tank from just behind it.
+                const support = ranged[0] || splashers[0] || swarms[0] || spirits[0];
+                if (support) pick(support, { x: laneX, y: Math.max(80, Math.min(...ourPush.map(u => u.y)) - 45) });
             }
+            // Spare-lane chip while pushing: Miner/Graveyard/Barrel on the OTHER tower.
+            if (!action && smart && (miner.length || graveyard.length || barrel.length) && attackTower) {
+                const chip = miner[0] || graveyard[0] || barrel[0];
+                pick(chip, towerSpot(attackTower));
+            }
+            if (!action) pick(cheapest[0], laneSpot(laneX));
         }
     }
 
-    // --- 4. LATE-GAME DESPERATION ---
-    // If it's losing on crowns with under 30s left, spend everything.
+    // === PRIORITY H — ECONOMY (very safe & flush → drop a Juice Pump) =====
+    if (!action && smart && pump.length && threats.length === 0 && opp.juice >= (pump[0].cost + 2)) {
+        pick(pump[0], { x: ARENA_WIDTH / 2, y: 120 });
+    }
+
+    // === PRIORITY I — LATE-GAME DESPERATION ==============================
     if (!action && gameState.gameTimer < 30) {
-        const oppCrowns = 3 - gameState.player.towers.filter(t => t.health > 0).length;
-        const plyCrowns = 3 - gameState.opponent.towers.filter(t => t.health > 0).length;
-        if (plyCrowns > oppCrowns) {
-            action = { card: byCostDesc[0], x: opp.pushLane || ARENA_WIDTH / 2, y: RIVER_Y - 50 };
-        }
+        const oppCrowns = 3 - opp.towers.filter(t => t.health > 0).length;
+        const plyCrowns = 3 - plyTowers.length;
+        if (plyCrowns > oppCrowns) pick(cheapest[cheapest.length - 1], laneSpot(attackTower ? attackTower.x : ARENA_WIDTH / 2));
     }
 
-    // --- 5. EXECUTE ---
+    // --- EXECUTE ---
     if (action && action.card) {
         const cardIndex = opp.hand.findIndex(c => c === action.card);
         if (cardIndex < 0) { opp.playCooldown = 20; return; }
         const [playedCard] = opp.hand.splice(cardIndex, 1);
-        opp.juice = Math.max(0, opp.juice - playedCard.cost);
+        opp.juice = Math.max(0, opp.juice - (playedCard.cost || 0));
         opp.discard.push(playedCard);
         drawCard('opponent');
 
-        // Troops must respect the AI's own half, exactly like the player's.
         let px = Math.max(20, Math.min(ARENA_WIDTH - 20, action.x));
         let py = action.y;
-        if (playedCard.category !== 'Spell') py = Math.max(30, Math.min(RIVER_Y - 20, py));
+        // Ordinary troops stay in the AI's half; spells and deploy-anywhere troops
+        // (the Miner) may target the whole board, including the player's towers.
+        if (playedCard.category !== 'Spell' && !playedCard.deployAnywhere) py = Math.max(30, Math.min(RIVER_Y - 20, py));
         else py = Math.max(20, Math.min(ARENA_HEIGHT - 20, py));
 
         playCard(playedCard, px, py, 'opponent');
@@ -7813,52 +8220,108 @@ function showTeacherReport() {
 }
 
 function renderInstructions() {
+    // A collapsible reference block (used for the longer sections).
+    const acc = (title, body) => `
+        <details class="glass-panel rounded-2xl border-l-4 border-slate-500 overflow-hidden">
+            <summary class="cursor-pointer select-none list-none p-4 bangers-font text-xl text-white flex items-center justify-between">
+                <span>${title}</span><span class="text-yellow-400 text-2xl">＋</span>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-gray-300 space-y-2">${body}</div>
+        </details>`;
+
     instructionsContent.innerHTML = `
-        <div class="space-y-8">
+        <div class="space-y-5 pb-6">
             <div class="text-center">
-                <h2 class="bangers-font text-3xl sm:text-5xl text-yellow-400 drop-shadow-lg">SYNTAX FIELD MANUAL</h2>
-                <p class="text-blue-300 font-bold tracking-widest mt-2">HOW TO SURVIVE THE GAUNTLET</p>
+                <h2 class="bangers-font text-3xl sm:text-5xl text-yellow-400 drop-shadow-lg">HOW TO PLAY</h2>
+                <p class="text-blue-300 font-bold tracking-widest mt-1 text-sm">EPIC LANGUAGE ARENA · FIELD MANUAL</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pb-4">
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-yellow-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">🏆 THE MISSION</h3>
-                    <p class="text-gray-300 text-sm">Destroy the opponent's <b>King Tower</b> for an instant win. Otherwise, when the 3-minute timer ends, whoever has <b>more towers standing</b> wins. Each tower you destroy is a 👑 crown.</p>
-                </div>
+            <!-- The confusion the guide most needs to clear up, up top. -->
+            <div class="rounded-2xl p-4 border-2 border-yellow-500/60" style="background:rgba(234,179,8,.10)">
+                <div class="bangers-font text-xl text-yellow-300">⬆️ "REVISE" = LEVEL UP</div>
+                <p class="text-sm text-gray-200 mt-1">Just like revising your writing makes it stronger, <b>revising a card upgrades it</b> to the next level — more health and damage. You'll see the <b>⬆️ REVISE → LEVEL</b> button when you tap a card. It costs <b>💰 Gold</b> plus a few <b>duplicate copies</b> of that card (earned from Chests and Daily Deals). <b>Revise = Upgrade.</b> That's it!</p>
+            </div>
 
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-blue-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">⚔️ DEPLOYMENT</h3>
-                    <p class="text-gray-300 text-sm">Two ways to play a card — <b>drag</b> it onto the arena, or <b>tap</b> it then <b>tap</b> where you want it. The glowing blue zone shows where you're allowed to place <b>troops</b>: your own side of the river. <b>Spells</b> can be cast anywhere.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-yellow-500">
+                    <h3 class="bangers-font text-xl text-white mb-1">🏆 The Goal</h3>
+                    <p class="text-sm text-gray-300">Knock down towers. Destroy the enemy <b>King Tower</b> (the big center one) for an instant win. Otherwise, when the 3-minute clock ends, whoever has <b>more towers standing</b> wins. Each tower is a 👑 crown.</p>
                 </div>
-
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-pink-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">🧃 GRAMMAR JUICE</h3>
-                    <p class="text-gray-300 text-sm">The pink bar is your energy. It refills on its own, up to <b>10</b>. Each card costs the number in its pink circle. In the <b>final minute</b> it refills twice as fast — that's when big pushes happen.</p>
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-blue-500">
+                    <h3 class="bangers-font text-xl text-white mb-1">⚔️ Playing Cards</h3>
+                    <p class="text-sm text-gray-300"><b>Drag</b> a card onto the arena, or <b>tap</b> it then tap where to place it. Troops go on <b>your side of the river</b> (the glowing zone); knock down a side tower to open that lane. <b>Spells</b> can target anywhere.</p>
                 </div>
-
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-purple-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">🧠 GRAMMAR LINKS</h3>
-                    <p class="text-gray-300 text-sm">Casting a <b>spell</b> — or replaying the <b>same card twice in a row</b> — triggers a grammar question. <b>The battle pauses while you read</b>, so take your time. Right answers cast the spell; wrong ones refund only a quarter of the Juice and lock your cards for 3 seconds.</p>
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-pink-500">
+                    <h3 class="bangers-font text-xl text-white mb-1">🧃 Grammar Juice</h3>
+                    <p class="text-sm text-gray-300">Your pink energy bar, filling on its own up to <b>10</b>. Every card costs the number in its pink circle. In <b>Extra Credit</b> (the final minute / overtime) it fills <b>faster</b> — save a push for it.</p>
                 </div>
-
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-emerald-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">🧬 SYNTAX SYNERGY</h3>
-                    <p class="text-gray-300 text-sm">Play two related parts of speech back-to-back (within 8 seconds) for a bonus:</p>
-                    <ul class="text-gray-300 text-sm mt-2 space-y-1 list-disc list-inside">
-                        <li><b>Adjective → Noun</b> = Shield 🛡️</li>
-                        <li><b>Adverb → Verb</b> = Haste ⚡</li>
-                        <li><b>Pronoun → Verb</b> = +50% Damage 💥</li>
-                        <li><b>Preposition → Noun</b> = +30% Health ❤️</li>
-                        <li><b>Conjunction → Clause</b> = Juice refund 🧃</li>
-                        <li><b>Interjection → any troop</b> = Stun ❄️</li>
-                    </ul>
-                </div>
-
-                <div class="glass-panel p-5 rounded-3xl border-l-4 border-green-500">
-                    <h3 class="bangers-font text-2xl text-white mb-2">📖 THE LEXICON</h3>
-                    <p class="text-gray-300 text-sm">Your Battle Sentence holds exactly <b>6 cards</b>. Tap any card to read <b>what its grammar term actually means</b>, with an example — then spend Gold and duplicates to level it up. Chests and the Daily Deals both hand out duplicates.</p>
+                <div class="glass-panel p-4 rounded-2xl border-l-4 border-purple-500">
+                    <h3 class="bangers-font text-xl text-white mb-1">🧠 Grammar Links</h3>
+                    <p class="text-sm text-gray-300">Casting a <b>spell</b> — or replaying the <b>same card twice in a row</b> — asks you a grammar question. <b>The battle pauses</b>, so read carefully. Right = it fires; wrong = most of the Juice is lost and your cards lock for 3 seconds. Miss the same skill 3× and the game teaches you a quick lesson.</p>
                 </div>
             </div>
+
+            ${acc('🧬 Syntax Synergies (card combos)', `
+                <p>Play two related parts of speech back-to-back (within 8 seconds) for a free bonus on the second card:</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>Adjective → Noun</b> = Shield 🛡️</li>
+                    <li><b>Adverb → Verb</b> = Haste ⚡</li>
+                    <li><b>Pronoun → Verb</b> = +50% Damage 💥</li>
+                    <li><b>Preposition → Noun</b> = +30% Health ❤️</li>
+                    <li><b>Conjunction → Clause</b> = Juice refund 🧃</li>
+                    <li><b>Interjection → any troop</b> = Stun ❄️</li>
+                </ul>`)}
+
+            ${acc('🃏 Card Abilities — what the icons & words mean', `
+                <p>Tap any card to read its grammar term, an example, and its stats. Cards can have special abilities:</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>Charge</b> (Prince, Hog) — give it a clear run and its first hit is much stronger. A stun or knockback resets it.</li>
+                    <li><b>Spirit</b> (kamikaze) — rushes in, bursts once for area damage, then dies. Super cheap.</li>
+                    <li><b>Splash / cleave</b> — hits every enemy bunched around the target. Great vs swarms.</li>
+                    <li><b>Building-targeter</b> (Hog, Ram, Golem) — ignores your troops and beelines your towers. Distract it with a building.</li>
+                    <li><b>Spawner building</b> — periodically pumps out little troops while it stands.</li>
+                    <li><b>Juice Pump</b> — a building that <b>generates Juice</b> over time. Slow value that snowballs if ignored.</li>
+                    <li><b>Healer</b> — mends nearby friends instead of attacking.</li>
+                    <li><b>Shielded</b> (Guards) — the shield soaks a hit before the troop is touched.</li>
+                    <li><b>Flying</b> — floats over the river; only air-capable troops and spells can hit it.</li>
+                    <li><b>Deploy-anywhere</b> (Miner) — place it <b>anywhere</b>, even on the enemy tower.</li>
+                </ul>`)}
+
+            ${acc('✨ Signature spells (Clash-style)', `
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>The Log (Run-On Roller)</b> — rolls up a lane, hitting everything it passes and shoving it back.</li>
+                    <li><b>Tornado (Conjunction Cyclone)</b> — drags enemy troops to one spot. Pull a push onto your tower, or clump them for a splash.</li>
+                    <li><b>Barrel (Bracket Barrel)</b> — throws a squad of goblins wherever you aim.</li>
+                    <li><b>Graveyard (Fragment Graveyard)</b> — spawns a stream of weak troops around the enemy tower over time.</li>
+                    <li><b>Mirror (Anaphora Mirror)</b> — replays your <b>last card one level stronger</b>. Its cost is that card's cost + 1.</li>
+                    <li><b>Zap (Exclamation Jolt)</b> — a cheap stun that resets charges and clears the tiniest troops.</li>
+                </ul>`)}
+
+            ${acc('⬆️ Upgrading, Revising & Recycling', `
+                <p><b>Revise = Upgrade.</b> Tap a card, then <b>⬆️ REVISE → LEVEL</b> to make it stronger. Each revision costs <b>Gold</b> + <b>duplicate copies</b>.</p>
+                <p><b>Wildcards 🃏</b> stand in for missing copies of a matching rarity — use them when you have the Gold but not the duplicates.</p>
+                <p><b>Recycle ♻️</b> turns spare duplicates you don't need into <b>Gold + Ink</b>.</p>
+                <p><b>Evolutions ✨</b> — play the same card <b>three times in one match</b> and it evolves into a stronger form for the rest of that battle.</p>
+                <p>Your <b>Battle Sentence (deck)</b> holds exactly <b>${DECK_SIZE} cards</b>, and you have <b>${DECK_SLOTS} deck slots</b>. The <b>Deck Doctor</b> in My Lexicon can auto-build a balanced deck for you.</p>`)}
+
+            ${acc('👑 Champions & 🏰 Tower Scribes', `
+                <p><b>Champions</b> are elite cards with an <b>activated ability</b> — once deployed, a ⚡ button appears above them; tap it (it costs Juice) to unleash their power. You may run <b>one Champion per deck</b>.</p>
+                <p><b>Tower Scribes</b> re-skin your towers and grant a small permanent perk (extra hitpoints, damage, range…). Buy and equip them in <b>Daily Deals</b> with Ink.</p>`)}
+
+            ${acc('💰 Gold vs. 🖋️ Ink', `
+                <p><b>Gold 💰</b> unlocks and revises cards. You earn it from battles, chests, and recycling.</p>
+                <p><b>Ink 🖋️</b> is earned <b>only by answering grammar questions correctly</b> — never just by winning. Spend it in <b>The Ink Press</b> on wildcards and Tower Scribes. Studying literally powers up your account.</p>`)}
+
+            ${acc('🪜 The Ladder & Arenas', `
+                <p>Winning earns 🏆 <b>trophies</b>; losing costs a few. Your trophy total sets which <b>Arena</b> you fight in — and each arena teaches a different ELA unit (Parts of Speech → Punctuation → Sentences → Roots → Figurative → Reading → Argument). Climbing the ladder walks the whole curriculum in order.</p>`)}
+
+            ${acc('📚 Study Tools', `
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>Grammar Codex</b> — a searchable reference of all 58 concepts with your mastery on each.</li>
+                    <li><b>Red Pen Report</b> — after a match, review the questions you missed; they come back until you've learned them.</li>
+                    <li><b>Battle Log</b> — your last 10 matches, opponents, crowns, and accuracy.</li>
+                    <li><b>Teacher Report</b> (in the Codex) — your progress grouped by Common Core standard.</li>
+                </ul>`)}
         </div>
     `;
 }
@@ -8851,7 +9314,10 @@ function showCardInfoModal(card) {
 
             const upgradeBtn = document.createElement('button');
             upgradeBtn.className = `btn-wood w-full ${!canAfford ? 'opacity-50' : ''}`;
-            upgradeBtn.innerHTML = `REVISE (💰 ${req.gold} | 🃏 ${have}/${req.cards})`;
+            // "Revise" is the ELA word for upgrade — spell it out so it's obvious that
+            // this is how you LEVEL UP a card (revising your writing = improving it).
+            upgradeBtn.innerHTML = `⬆️ REVISE → LEVEL ${currentLevel + 1}
+                <span class="block opacity-80 text-xs font-normal">Upgrade this card · 💰 ${req.gold} · 🃏 ${have}/${req.cards} copies</span>`;
             upgradeBtn.onclick = () => {
                 if (!canAfford) { flashDenied(short > 0 ? `Need ${short} more copies.` : 'Not enough Gold.'); return; }
                 playerData.gold -= req.gold;
@@ -9059,6 +9525,8 @@ function playCard(card, x, y, owner, modifier) {
     playerState.lastPlayedCard = card;
     playerState.lastPlayedTime = now;
     playerState.lastPlayedPos = {x, y};
+    // Remembered separately for the Mirror card — it must never echo itself.
+    if (card.spellEffect !== 'mirror') playerState.lastRealCard = card;
 }
 
 // --- SPELL ENGINE ---
@@ -9194,6 +9662,7 @@ function castSpell(card, x, y, owner) {
                 u.y += Math.sin(ang) * 70;
                 u.clampToArena();
                 u.target = null;
+                u.chargeDist = 0; u.charged = false;
             });
             break;
         }
@@ -9206,6 +9675,49 @@ function castSpell(card, x, y, owner) {
             gameState.effects.push(new Effect(x, y, { effectType: 'explosion', vfx: damageVfxFor(card) || 'rocket', radius, duration: 34 }));
             applyAreaDamage(card, x, y, owner, radius);
             inRadius(enemyUnits).forEach(u => u.applyStatus('frozen', card.stunDuration || 90));
+            break;
+        }
+        case 'log': {
+            // Rolls up the lane from the cast point, hitting everything it passes.
+            gameState.hazards.push(new RollingLog(x, y, owner, card));
+            gameState.shakeIntensity = Math.max(gameState.shakeIntensity, 5);
+            break;
+        }
+        case 'pull': {
+            // Tornado: a pull-field that drags enemy troops toward the point.
+            gameState.hazards.push(new Tornado(x, y, owner, card));
+            gameState.effects.push(new Effect(x, y, { effectType: 'knockback', radius, duration: 30 }));
+            break;
+        }
+        case 'graveyard': {
+            // Summons a stream of weak troops at the target over time.
+            gameState.hazards.push(new Graveyard(x, y, owner, card));
+            gameState.effects.push(new Effect(x, y, { effectType: 'poison', radius: card.radius || 90, duration: 34 }));
+            break;
+        }
+        case 'mirror': {
+            // Replays your last real card at +1 level. Nothing to echo yet → refund.
+            const last = gameState[owner].lastRealCard;
+            if (!last) {
+                gameState[owner].juice = Math.min(JUICE_MAX, gameState[owner].juice + (card.cost || 0));
+                if (owner === 'player') flashDenied('Nothing to echo yet — play a card first!');
+                break;
+            }
+            const lvl = Math.min(typeof MAX_CARD_LEVEL === 'number' ? MAX_CARD_LEVEL : 13, (last.level || 1) + 1);
+            const copy = { ...last, level: lvl };
+            gameState.effects.push(new Effect(x, y, { effectType: 'synergy', radius: 70, duration: 34 }));
+            gameState.damageIndicators.push(new DamageIndicator(x, y, 'Echo!', '#93c5fd'));
+            if (copy.category === 'Spell') {
+                castSpell(copy, x, y, owner);
+            } else {
+                // Keep troop/building placement legal: clamp to the caster's half
+                // unless the mirrored card can deploy anywhere (e.g. a Miner).
+                let dy = y;
+                if (!copy.deployAnywhere) {
+                    dy = owner === 'player' ? Math.max(RIVER_Y + 25, y) : Math.min(RIVER_Y - 25, y);
+                }
+                playCard(copy, x, dy, owner);
+            }
             break;
         }
         case 'damage':
@@ -9243,12 +9755,23 @@ function applyAreaDamage(card, x, y, owner, radius) {
             if (ps.gameDeck.length === 0) { ps.gameDeck = shuffle(ps.discard); ps.discard = []; }
             if(ps.gameDeck.length > 0) ps.hand.push(ps.gameDeck.pop());
         }
+// The Mirror's Juice cost is dynamic (Clash Royale's rule): the last real card's
+// cost + 1, so replaying a heavy card still costs like a heavy card. Everything
+// else just returns its printed cost.
+function juiceCost(card) {
+    if (card && card.spellEffect === 'mirror') {
+        const last = gameState && gameState.player && gameState.player.lastRealCard;
+        return last ? Math.min(9, (last.cost || 0) + 1) : (card.cost || 3);
+    }
+    return card ? card.cost : 0;
+}
+
 function handCardMarkup(card) {
     return `
         <div class="bangers-font card-nm text-gray-800 text-center px-0.5">${card.name}</div>
         <div class="card-emoji">${card.emoji}</div>
         <div class="bangers-font card-ty text-purple-600 uppercase truncate w-full text-center">${card.type}</div>
-        <div class="cost-badge absolute top-0.5 left-0.5 bg-pink-500 text-white rounded-full flex items-center justify-center border border-white shadow-sm font-bold">${card.cost}</div>
+        <div class="cost-badge absolute top-0.5 left-0.5 bg-pink-500 text-white rounded-full flex items-center justify-center border border-white shadow-sm font-bold">${juiceCost(card)}</div>
     `;
 }
 
@@ -9299,7 +9822,13 @@ function renderPlayerHand() {
             el.__card = card;
         }
 
-        const canAfford = gameState.player.juice >= card.cost;
+        // Keep the cost badge current — the Mirror's cost changes with the last
+        // card played even while it sits in the same hand slot.
+        const cost = juiceCost(card);
+        const badge = el.querySelector('.cost-badge');
+        if (badge && badge.textContent != cost) badge.textContent = cost;
+
+        const canAfford = gameState.player.juice >= cost;
         const playable = canAfford && !locked;
         const wasPlayable = el.dataset.playable === '1';
 
@@ -9370,7 +9899,7 @@ function attachHandCardInput(el, card, index) {
         // Listeners used to be attached only to playable cards, so an unaffordable
         // card silently ignored you. Now it tells you why.
         const locked = gameState.player.neuralLockout > 0;
-        if (gameState.player.juice < card.cost || locked) {
+        if (gameState.player.juice < juiceCost(card) || locked) {
             el.classList.remove('deny-shake');
             void el.offsetWidth;
             el.classList.add('deny-shake');
@@ -10859,11 +11388,13 @@ function tryDeploy(card, index, x, y) {
     }
     // Juice can drain between selecting and placing (e.g. a champion ability),
     // which previously pushed the player into negative elixir.
-    if (gameState.player.juice < card.cost) {
+    const cost = juiceCost(card);   // dynamic for the Mirror; printed cost otherwise
+    if (gameState.player.juice < cost) {
         flashDenied("Not enough Juice!");
         return false;
     }
-    if (card.category !== 'Spell' && !playerMayDeployAt(x, y)) {
+    // `deployAnywhere` cards (the Miner) ignore the your-side-only rule entirely.
+    if (card.category !== 'Spell' && !card.deployAnywhere && !playerMayDeployAt(x, y)) {
         const anyOpen = gameState.opponent.towers.some(t => !t.isKing && t.health <= 0);
         flashDenied(anyOpen ? "Deploy in your half or an opened lane!" : "Troops deploy on YOUR side of the river!");
         return false;
@@ -10875,10 +11406,10 @@ function tryDeploy(card, index, x, y) {
     const isRepeat = card.id === gameState.player.lastPlayedCard?.id;
 
     if (card.category === 'Spell' || isRepeat) {
-        gameState.player.juice -= card.cost;
+        gameState.player.juice -= cost;
         showQuestion(card, x, y, index, isRepeat);
     } else {
-        gameState.player.juice -= card.cost;
+        gameState.player.juice -= cost;
         playCard(card, x, y, 'player');
         const [playedCard] = gameState.player.hand.splice(index, 1);
         gameState.player.discard.push(playedCard);
